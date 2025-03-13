@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "940949080493",
+    "project_id": "eclinic-162ab",
+    "storage_bucket": "eclinic-162ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940949080493:android:5c49fd808a9a051a62b924",
+        "android_client_info": {
+          "package_name": "com.example.eclinic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQue5hxjY3W-xodwhwKwYdvkiEYqlDhLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
