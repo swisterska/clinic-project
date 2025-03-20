@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/LogRegBackgroundLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/logregbackground"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center">
+
+
+    <ImageButton
+        android:id="@+id/ChoiceLoginButton"
+        android:layout_width="250dp"
+        android:layout_height="70dp"
+        android:src="@drawable/choiceloginbutton"
+        android:textStyle="bold"
+        android:translationY="150dp"
+        android:background="#00FFFFFF"
+    >
+
+    </ImageButton>
+
+    <ImageButton
+        android:id="@+id/ChoiceRegisterButton"
+        android:layout_width="250dp"
+        android:layout_height="70dp"
+        android:src="@drawable/choiceregisterbutton"
+        android:textStyle="bold"
+        android:translationY="150dp"
+        android:background="#00FFFFFF"
+        >
+    </ImageButton>
+
+
+
+</LinearLayout>
+
+
