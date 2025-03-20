@@ -13,6 +13,6 @@ data class Appointment(
     var patientId: String = "",
     var dateTime: String = "",
     var status: AppointmentStatus = AppointmentStatus.PENDING,
-    var reason: String = "",
-    var prescriptionId: String? = null // If a prescription was issued
+    var prescriptionId: String? = null, // If a prescription was issued
+    var chatId: String? = null
 )

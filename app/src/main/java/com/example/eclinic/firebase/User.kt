@@ -13,5 +13,4 @@ data class User(
     var firstName: String = "",
     var lastName: String = "",
     var role: Role = Role.UNDEFINED
-
 )
