@@ -2,8 +2,8 @@ package com.example.eclinic.firebase
 
 data class Chat(
     var id: String = "",
-    var senderId: String = "",
-    var receiverId: String = "",
+    var patientId: String = "",
+    var doctorId: String = "",
     var message: String = "",
     var timestamp: String = ""
 )

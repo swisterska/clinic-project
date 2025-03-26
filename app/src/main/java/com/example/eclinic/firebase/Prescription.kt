@@ -6,5 +6,6 @@ data class Prescription(
     var patientId: String = "",
     var medication: List<String> = emptyList(),
     var dosageInstructions: String = "",
-    var dateIssued: String = ""
+    var dateIssued: String = "",
+    var prescriptionFileUrl: String = ""
 )
