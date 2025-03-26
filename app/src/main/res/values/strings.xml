@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">eclinic</string>
+    <string name="err_msg_enter_email">Please enter your email</string>
+    <string name="err_msg_enter_password">Please enter your password</string>
+
+    <string name="err_msg_enter_name">Please enter your name</string>
+    <string name="err_msg_enter_surname">Please enter your surname</string>
+    <string name="err_msg_enter_dob">Please enter your date of birth</string>
+
+    <string name="err_msg_enter_confpassword">Please confirm your password</string>
+    <string name="err_msg_password_mismatch">Passwords mismatch</string>
+    <string name="err_msg_enter_phone">Please enter your phone number</string>
+    <string name="err_msg_enter_specialization">Please enter your specialization</string>
+
+    <string name="register_success">You are registered succesfully</string>
 </resources>
