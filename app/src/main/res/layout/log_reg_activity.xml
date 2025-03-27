@@ -3,7 +3,7 @@
     android:id="@+id/LogRegBackgroundLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/logregbackground"
+    android:background="@drawable/startpage"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:gravity="center">
@@ -23,15 +23,13 @@
 
     <ImageButton
         android:id="@+id/ChoiceRegisterButton"
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="70dp"
-        android:src="@drawable/choiceregisterbutton"
-        android:textStyle="bold"
-        android:translationY="150dp"
         android:background="#00FFFFFF"
-        >
-    </ImageButton>
-
+        android:src="@drawable/registerbtn"
+        android:textStyle="bold"
+        android:translationX="29dp"
+        android:translationY="150dp"></ImageButton>
 
 
 </LinearLayout>

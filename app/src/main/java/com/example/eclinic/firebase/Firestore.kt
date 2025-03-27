@@ -1,12 +1,13 @@
 package com.example.eclinic.firebase
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 /**
  * A class that handles Firestore operations using Kotlin coroutines.
  */
-class Firestore{
+class Firestore {
 
     // Instance of FirebaseFirestore to interact with the Firestore database
     private val mFireStore = FirebaseFirestore.getInstance()
@@ -20,9 +21,15 @@ class Firestore{
     suspend fun registerOrUpdateUser(user: User) {
         try {
             // Save or overwrite the user document with the given user ID
-            mFireStore.collection("users").document(user.id).set(user).await()
+            mFireStore.collection("users")
+                .document(user.id)
+                .set(user)
+                .await() // 🔹 Fix: Await Firestore operation to ensure it completes
+
+            Log.d("Firestore", "User successfully registered/updated.")
+
         } catch (e: Exception) {
-            // Throw an exception with a descriptive message if an error occurs
+            Log.e("Firestore", "Error saving user data: ${e.message}", e)
             throw Exception("Error saving user data: ${e.message}")
         }
     }
@@ -36,14 +43,14 @@ class Firestore{
      */
     suspend fun loadUserData(userId: String): Map<String, Any>? {
         try {
-            // Fetch the user document with the specified user ID
             val documentSnapshot = mFireStore.collection("users")
                 .document(userId)
                 .get()
                 .await() // Suspends until the document is retrieved
+
             return documentSnapshot.data // Returns the document data as a map, or null if the document does not exist
         } catch (e: Exception) {
-            // Throw an exception with a descriptive message if an error occurs
+            Log.e("Firestore", "Error loading user data: ${e.message}", e)
             throw Exception("Error loading user data: ${e.message}")
         }
     }
@@ -58,21 +65,21 @@ class Firestore{
      */
     suspend fun updateUserData(userId: String, updatedData: Map<String, Any?>) {
         try {
-            // Filter out null or blank values from the updated data
             val filteredData = updatedData.filterValues { value ->
                 value != null && !(value is String && value.isBlank())
             }
 
-            // If there's nothing to update, exit early
             if (filteredData.isEmpty()) return
 
-            // Update the user document with the filtered data
             mFireStore.collection("users")
                 .document(userId)
                 .update(filteredData)
-                .await() // Suspends until the operation is complete
+                .await() // Ensures Firestore operation completes before proceeding
+
+            Log.d("Firestore", "User successfully updated.")
+
         } catch (e: Exception) {
-            // Throw an exception with a descriptive message if an error occurs
+            Log.e("Firestore", "Error updating user data: ${e.message}", e)
             throw Exception("Error updating user data: ${e.message}")
         }
     }

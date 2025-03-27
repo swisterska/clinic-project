@@ -1,10 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/LogRegBackgroundLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:background="@drawable/logregbackground"
+    android:orientation="vertical"
+    android:gravity="center"
+    >
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp">
+
+        <!-- ImageButton -->
+        <ImageButton
+            android:id="@+id/GoBackButton"
+            android:layout_width="55dp"
+            android:layout_height="60dp"
+            android:background="#00FFFFFF"
+            android:src="@drawable/gobackbutton"
+            android:layout_marginEnd="10dp"/>
+
+        <!-- Empty space to allow TextView to take available space -->
+
+    </LinearLayout>
+    <!-- Spacer to push fields down -->
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="400dp"/> <!-- Adjust height to move elements down -->
+
+    <EditText
+        android:id="@+id/emailTextEdit"
+        android:layout_width="316dp"
+        android:layout_height="wrap_content"
+        android:hint="Email"/>
+
+    <EditText
+        android:id="@+id/passwordTextEdit"
+        android:layout_width="315dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        android:hint="Password"/>
+
+    <Button
+        android:id="@+id/LoginButton"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/red"
+        android:text="Login"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"/>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1" /> <!-- Increased margin for spacing -->
+
+</LinearLayout>

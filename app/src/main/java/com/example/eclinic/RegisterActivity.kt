@@ -135,7 +135,7 @@ class RegisterActivity : BaseActivity() {
             val password = inputPassword.text.toString().trim()
             val dob = inputDob.text.toString().trim()
             val specialization = inputSpecialization.text.toString().trim()
-            val type = if (radioPatient.isChecked) "patient" else "doctor"
+            val role = if (radioPatient.isChecked) "PATIENT" else "DOCTOR"  // Ensure role is defined properly
 
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
@@ -146,35 +146,37 @@ class RegisterActivity : BaseActivity() {
                             false
                         )
 
-
-                        val user = User(
-                            id = firebaseUser.uid,
-                            firstName = name,
-                            lastName = surname,
-                            email = email,
-                            phoneNumber = phone,
-                            profilePictureUrl = ""
-
+                        // Create a HashMap to store user details
+                        val userData = hashMapOf(
+                            "id" to firebaseUser.uid,
+                            "firstName" to name,
+                            "lastName" to surname,
+                            "email" to email,
+                            "phoneNumber" to phone,
+                            "role" to role,  // ✅ Store role in Firestore
+                            "profilePictureUrl" to "",
                         )
-                        if (type == "patient") {
-                            user.dateOfBirth = dob
+
+                        // Add additional fields based on role
+                        if (role == "PATIENT") {
+                            userData["dateOfBirth"] = dob
                         } else {
-                            user.specialization = specialization
+                            userData["specialization"] = specialization
                         }
 
-                        // Save data to Firestore
-                        lifecycleScope.launch {
-                            try {
-                                val firestore = Firestore()
-                                firestore.registerOrUpdateUser(user)
-                                Toast.makeText(this@RegisterActivity, "Data saved successfully!", Toast.LENGTH_SHORT).show()
-
-                            } catch (e: Exception) {
-                                Toast.makeText(this@RegisterActivity, "Failed to save data: ${e.message}", Toast.LENGTH_SHORT).show()
-                                }
+                        // Save user data to Firestore
+                        FirebaseFirestore.getInstance().collection("users")
+                            .document(firebaseUser.uid)
+                            .set(userData)
+                            .addOnSuccessListener {
+                                Toast.makeText(this@RegisterActivity, "Registration successful!", Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                                startActivity(intent)
+                                finish()
                             }
-                        FirebaseAuth.getInstance().signOut()
-                        finish()
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this@RegisterActivity, "Error saving data: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
 
                     } else {
                         showErrorSnackBar(task.exception!!.message.toString(), true)
@@ -183,11 +185,6 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-    fun userRegistrationSuccess() {
-        Toast.makeText(
-            this@RegisterActivity,
-            getString(R.string.register_success),
-            Toast.LENGTH_SHORT
-        ).show()
-    }
+
+
 }

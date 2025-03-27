@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Eclinic"
         tools:targetApi="31">
         <activity
+            android:name=".MainPageDoctor"
+            android:exported="false" />
+        <activity
+            android:name=".MainPagePatient"
+            android:exported="false" />
+        <activity
             android:name=".BaseActivity"
             android:exported="false" />
         <activity
