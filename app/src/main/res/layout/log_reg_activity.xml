@@ -29,7 +29,32 @@
         android:src="@drawable/registerbtn"
         android:textStyle="bold"
         android:translationX="29dp"
-        android:translationY="150dp"></ImageButton>
+        android:translationY="160dp">
+
+    </ImageButton>
+
+    <Button
+        android:id="@+id/Gotodoctor"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#BFD3DA"
+        android:text="doctor"
+        android:textColor="@color/ourblue"
+        android:textStyle="bold"
+        android:translationY="200dp" />
+
+    <Button
+        android:id="@+id/Gotopatient"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#BFD3DA"
+        android:text="patient"
+        android:textColor="@color/ourblue"
+        android:textStyle="bold"
+        android:translationY="220dp" />
+
 
 
 </LinearLayout>
