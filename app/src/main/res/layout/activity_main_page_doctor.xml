@@ -1,35 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/LogRegBackgroundLayout"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/logregbackground"
-    android:orientation="vertical"
-    android:gravity="center"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/ourblue">
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="10dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation_doctor"
+        android:paddingBottom="-5dp"/>
 
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Doctor!"
-            android:textSize="35sp"
-            android:textColor="@android:color/black"
-            android:layout_marginTop="-10dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"/>
+    <TextView
+        android:id="@+id/tvWelcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome, User"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
 
-        <!-- ImageButton -->
-
-</LinearLayout>
-</LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_doctor"
+        android:background="@color/ourgrey"
+        android:layout_width="match_parent"
+        android:layout_height="105dp"
+        app:itemIconSize="500dp"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_nav_menu_doc"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
+        app:itemPaddingBottom="-5dp"/>
+</RelativeLayout>
