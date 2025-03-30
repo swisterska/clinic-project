@@ -4,13 +4,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#BFD3DA"> <!-- Background Color -->
+    android:background="#BFD3DA">
+
 
     <LinearLayout
         android:orientation="vertical"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:paddingTop="10dp">
+
+            <ImageButton
+                android:id="@+id/GoBackButton"
+                android:layout_width="55dp"
+                android:layout_height="60dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/gobackbutton"
+                android:layout_marginEnd="10dp"/>
+
+
+        </LinearLayout>
 
         <!-- Custom Toggle Button for Patient/Doctor -->
         <LinearLayout
@@ -100,26 +120,54 @@
             android:padding="12dp"
             android:layout_marginBottom="8dp"/>
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:hint="Password"
-            android:inputType="textPassword"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:hint="Confirm Password"
-            android:inputType="textPassword"
-            android:padding="12dp"
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <ImageButton
+                android:id="@+id/btnTogglePassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/eyeclosed"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="horizontal">
 
-        <!-- Register Button -->
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <ImageButton
+                android:id="@+id/btnToggleConfirmPassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/eyeclosed"/>
+        </LinearLayout>
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnRegister"
             android:text="Register"

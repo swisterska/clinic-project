@@ -29,6 +29,9 @@ class RegisterActivity : BaseActivity() {
     private lateinit var inputPasswordRepeat: EditText
     private lateinit var registerButton: Button
 
+    private lateinit var btnTogglePassword: ImageButton
+    private lateinit var btnToggleConfirmPassword: ImageButton
+
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
@@ -43,6 +46,12 @@ class RegisterActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        val returnButton = findViewById<ImageButton>(R.id.GoBackButton)
+        returnButton.setOnClickListener {
+            val intent = Intent(this, LogRegActivity::class.java)
+            startActivity(intent)
+        }
+
         // Initialize all views
         btnPatient = findViewById(R.id.btnPatient)
         btnDoctor = findViewById(R.id.btnDoctor)
@@ -55,6 +64,8 @@ class RegisterActivity : BaseActivity() {
         inputPassword = findViewById(R.id.etPassword)
         inputPasswordRepeat = findViewById(R.id.etConfirmPassword)
         registerButton = findViewById(R.id.btnRegister)
+        btnTogglePassword = findViewById(R.id.btnTogglePassword)
+        btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword)
 
         // Set default selection to Patient
         btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
@@ -84,7 +95,16 @@ class RegisterActivity : BaseActivity() {
             showDatePickerDialog()
         }
 
+        btnTogglePassword.setOnClickListener {
+            togglePasswordVisibility(inputPassword, btnTogglePassword)
+        }
+
+        btnToggleConfirmPassword.setOnClickListener {
+            togglePasswordVisibility(inputPasswordRepeat, btnToggleConfirmPassword)
+        }
+
     }
+
 
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
@@ -98,6 +118,17 @@ class RegisterActivity : BaseActivity() {
         }, year, month, day)
 
         datePickerDialog.show()
+    }
+
+    private fun togglePasswordVisibility(editText: EditText, toggleButton: ImageButton) {
+        if (editText.inputType == android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+            editText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+            toggleButton.setImageResource(R.drawable.eyeclosed)
+        } else {
+            editText.inputType = android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            toggleButton.setImageResource(R.drawable.eyeopen)
+        }
+        editText.setSelection(editText.text.length)
     }
 
 

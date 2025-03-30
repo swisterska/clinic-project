@@ -8,6 +8,7 @@
     android:background="@drawable/logregbackground"
     android:orientation="vertical"
     android:gravity="center"
+    android:paddingTop="10dp"
     >
 
     <LinearLayout
@@ -18,7 +19,6 @@
         android:padding="10dp"
         android:paddingTop="10dp">
 
-        <!-- ImageButton -->
         <ImageButton
             android:id="@+id/GoBackButton"
             android:layout_width="55dp"
@@ -27,13 +27,12 @@
             android:src="@drawable/gobackbutton"
             android:layout_marginEnd="10dp"/>
 
-        <!-- Empty space to allow TextView to take available space -->
 
     </LinearLayout>
-    <!-- Spacer to push fields down -->
+
     <Space
         android:layout_width="match_parent"
-        android:layout_height="390dp"/> <!-- Adjust height to move elements down -->
+        android:layout_height="390dp"/>
 
     <EditText
         android:id="@+id/emailTextEdit"
