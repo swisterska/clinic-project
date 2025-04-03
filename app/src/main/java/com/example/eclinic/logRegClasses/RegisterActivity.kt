@@ -1,10 +1,9 @@
-package com.example.eclinic
+package com.example.eclinic.logRegClasses
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,6 +12,7 @@ import androidx.core.content.ContextCompat
 import java.time.LocalDate
 import java.util.Calendar
 import android.app.DatePickerDialog
+import com.example.eclinic.R
 
 class RegisterActivity : BaseActivity() {
 

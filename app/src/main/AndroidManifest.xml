@@ -15,25 +15,25 @@
         android:theme="@style/Theme.Eclinic"
         tools:targetApi="31">
         <activity
-            android:name=".ProfileDocActivity"
+            android:name=".doctorClasses.ProfileDocActivity"
             android:exported="false" />
         <activity
-            android:name=".CalendarActivity"
+            android:name=".doctorClasses.CalendarActivity"
             android:exported="false" />
         <activity
-            android:name=".ConfirmVisitsActivity"
+            android:name=".doctorClasses.ConfirmVisitsActivity"
             android:exported="false" />
         <activity
-            android:name=".ChatDocActivity"
+            android:name=".doctorClasses.ChatDocActivity"
             android:exported="false" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".patientClasses.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".AppointmentsActivity"
+            android:name=".patientClasses.AppointmentsActivity"
             android:exported="false" />
         <activity
-            android:name=".ChatPatientActivity"
+            android:name=".patientClasses.ChatPatientActivity"
             android:exported="false" />
         <activity
             android:name=".patient.AppointmentPatientActivity"
@@ -48,22 +48,22 @@
             android:name=".pomocy"
             android:exported="false" />
         <activity
-            android:name=".MainPageDoctor"
+            android:name=".doctorClasses.MainPageDoctor"
             android:exported="false" />
         <activity
-            android:name=".MainPagePatient"
+            android:name=".patientClasses.MainPagePatient"
             android:exported="false" />
         <activity
-            android:name=".BaseActivity"
+            android:name=".logRegClasses.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".logRegClasses.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".logRegClasses.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".LogRegActivity"
+            android:name=".logRegClasses.LogRegActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

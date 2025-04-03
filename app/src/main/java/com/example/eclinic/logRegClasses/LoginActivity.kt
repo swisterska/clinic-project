@@ -1,10 +1,13 @@
-package com.example.eclinic
+package com.example.eclinic.logRegClasses
 
 import android.os.Bundle
 import android.content.Intent
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import com.example.eclinic.R
+import com.example.eclinic.doctorClasses.MainPageDoctor
+import com.example.eclinic.patientClasses.MainPagePatient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

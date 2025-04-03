@@ -1,7 +1,8 @@
-package com.example.eclinic
+package com.example.eclinic.logRegClasses
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.eclinic.R
 import com.google.android.material.snackbar.Snackbar
 
 /**

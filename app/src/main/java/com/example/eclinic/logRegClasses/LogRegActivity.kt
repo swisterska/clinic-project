@@ -1,4 +1,4 @@
-package com.example.eclinic
+package com.example.eclinic.logRegClasses
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,9 @@ import android.widget.ImageButton
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.eclinic.R
+import com.example.eclinic.doctorClasses.MainPageDoctor
+import com.example.eclinic.patientClasses.MainPagePatient
 
 /**
  * LogRegActivity is the activity where the user chooses to either log in, register, or go back to the main page.

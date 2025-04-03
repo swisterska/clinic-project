@@ -1,11 +1,11 @@
-package com.example.eclinic
+package com.example.eclinic.patientClasses
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.widget.TextView
+import com.example.eclinic.R
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
