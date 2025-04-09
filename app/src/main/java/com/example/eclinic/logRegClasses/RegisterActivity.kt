@@ -1,36 +1,24 @@
-package com.example.eclinic
+package com.example.eclinic.logRegClasses
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.tasks.await
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import com.example.eclinic.firebase.Firestore
-import com.example.eclinic.firebase.User
-import kotlinx.coroutines.launch
-
-
-
+import androidx.core.content.ContextCompat
+import java.time.LocalDate
+import java.util.Calendar
+import android.app.DatePickerDialog
+import com.example.eclinic.R
 
 class RegisterActivity : BaseActivity() {
 
-    private lateinit var radioGroupType: RadioGroup
-    private lateinit var radioPatient: RadioButton
-    private lateinit var radioDoctor: RadioButton
+    // Declare variables for UI elements
+    private lateinit var btnPatient: Button
+    private lateinit var btnDoctor: Button
     private lateinit var inputName: EditText
     private lateinit var inputSurname: EditText
     private lateinit var inputDob: EditText
@@ -40,18 +28,33 @@ class RegisterActivity : BaseActivity() {
     private lateinit var inputPassword: EditText
     private lateinit var inputPasswordRepeat: EditText
     private lateinit var registerButton: Button
+
+    private lateinit var btnTogglePassword: ImageButton
+    private lateinit var btnToggleConfirmPassword: ImageButton
+
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+
+    private var selectedDob: LocalDate? = null
+
+
+
+
+    private var selectedRole: String = "PATIENT"  // Default to Patient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        val returnButton = findViewById<ImageButton>(R.id.GoBackButton)
+        returnButton.setOnClickListener {
+            val intent = Intent(this, LogRegActivity::class.java)
+            startActivity(intent)
+        }
 
         // Initialize all views
-        radioGroupType = findViewById(R.id.radioGroupType)
-        radioPatient = findViewById(R.id.radioPatient)
-        radioDoctor = findViewById(R.id.radioDoctor)
+        btnPatient = findViewById(R.id.btnPatient)
+        btnDoctor = findViewById(R.id.btnDoctor)
         inputName = findViewById(R.id.etName)
         inputSurname = findViewById(R.id.etSurname)
         inputDob = findViewById(R.id.etDob)
@@ -61,20 +64,83 @@ class RegisterActivity : BaseActivity() {
         inputPassword = findViewById(R.id.etPassword)
         inputPasswordRepeat = findViewById(R.id.etConfirmPassword)
         registerButton = findViewById(R.id.btnRegister)
+        btnTogglePassword = findViewById(R.id.btnTogglePassword)
+        btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword)
 
-        // Show/hide fields dynamically
-        radioGroupType.setOnCheckedChangeListener { _, checkedId ->
-            if (checkedId == R.id.radioPatient) {
-                inputDob.visibility = EditText.VISIBLE
-                inputSpecialization.visibility = EditText.GONE
-            } else {
-                inputDob.visibility = EditText.GONE
-                inputSpecialization.visibility = EditText.VISIBLE
-            }
+        // Set default selection to Patient
+        btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+        btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+        registerButton.setBackgroundColor(ContextCompat.getColor(this, R.color.ourblue))
+
+        // Handle toggle between Patient and Doctor
+        btnPatient.setOnClickListener {
+            selectedRole = "PATIENT"
+            toggleButtonSelection()
+            inputDob.visibility = EditText.VISIBLE
+            inputSpecialization.visibility = EditText.GONE
+        }
+
+        btnDoctor.setOnClickListener {
+            selectedRole = "DOCTOR"
+            toggleButtonSelection()
+            inputDob.visibility = EditText.GONE
+            inputSpecialization.visibility = EditText.VISIBLE
         }
 
         registerButton.setOnClickListener {
             registerUser()
+        }
+
+        inputDob.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+        btnTogglePassword.setOnClickListener {
+            togglePasswordVisibility(inputPassword, btnTogglePassword)
+        }
+
+        btnToggleConfirmPassword.setOnClickListener {
+            togglePasswordVisibility(inputPasswordRepeat, btnToggleConfirmPassword)
+        }
+
+    }
+
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+            val dobString = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear)
+            inputDob.setText(dobString)
+        }, year, month, day)
+
+        datePickerDialog.show()
+    }
+
+    private fun togglePasswordVisibility(editText: EditText, toggleButton: ImageButton) {
+        if (editText.inputType == android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+            editText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+            toggleButton.setImageResource(R.drawable.eyeclosed)
+        } else {
+            editText.inputType = android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            toggleButton.setImageResource(R.drawable.eyeopen)
+        }
+        editText.setSelection(editText.text.length)
+    }
+
+
+
+    // Toggle button selection (highlight the selected role button)
+    private fun toggleButtonSelection() {
+        if (selectedRole == "PATIENT") {
+            btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+            btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+        } else {
+            btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+            btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
         }
     }
 
@@ -108,22 +174,16 @@ class RegisterActivity : BaseActivity() {
                 showErrorSnackBar(getString(R.string.err_msg_password_mismatch), true)
                 false
             }
-            radioPatient.isChecked && inputDob.text.trim().isEmpty() -> {
+            selectedRole == "PATIENT" && inputDob.text.trim().isEmpty() -> {
                 showErrorSnackBar(getString(R.string.err_msg_enter_dob), true)
                 false
             }
-            radioDoctor.isChecked && inputSpecialization.text.trim().isEmpty() -> {
+            selectedRole == "DOCTOR" && inputSpecialization.text.trim().isEmpty() -> {
                 showErrorSnackBar(getString(R.string.err_msg_enter_specialization), true)
                 false
             }
             else -> true
         }
-    }
-
-    fun goToLogin(view: View) {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private fun registerUser() {
@@ -135,7 +195,7 @@ class RegisterActivity : BaseActivity() {
             val password = inputPassword.text.toString().trim()
             val dob = inputDob.text.toString().trim()
             val specialization = inputSpecialization.text.toString().trim()
-            val role = if (radioPatient.isChecked) "PATIENT" else "DOCTOR"  // Ensure role is defined properly
+            val role = selectedRole  // Use the selected role (either "PATIENT" or "DOCTOR")
 
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
@@ -153,7 +213,7 @@ class RegisterActivity : BaseActivity() {
                             "lastName" to surname,
                             "email" to email,
                             "phoneNumber" to phone,
-                            "role" to role,  // ✅ Store role in Firestore
+                            "role" to role,
                             "profilePictureUrl" to "",
                         )
 
@@ -163,6 +223,8 @@ class RegisterActivity : BaseActivity() {
                         } else {
                             userData["specialization"] = specialization
                         }
+
+
 
                         // Save user data to Firestore
                         FirebaseFirestore.getInstance().collection("users")
@@ -185,6 +247,9 @@ class RegisterActivity : BaseActivity() {
         }
     }
 
-
-
+    fun goToLogin(view: View) {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

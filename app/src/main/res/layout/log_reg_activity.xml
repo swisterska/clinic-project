@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/LogRegBackgroundLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/startpage"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:gravity="center">
 
-
-    <ImageButton
-        android:id="@+id/ChoiceLoginButton"
-        android:layout_width="250dp"
-        android:layout_height="70dp"
-        android:src="@drawable/choiceloginbutton"
-        android:textStyle="bold"
-        android:translationY="150dp"
-        android:background="#00FFFFFF"
-    >
-
-    </ImageButton>
-
+    <!-- Register Button -->
     <ImageButton
         android:id="@+id/ChoiceRegisterButton"
         android:layout_width="wrap_content"
@@ -28,10 +16,60 @@
         android:background="#00FFFFFF"
         android:src="@drawable/registerbtn"
         android:textStyle="bold"
-        android:translationX="29dp"
-        android:translationY="150dp"></ImageButton>
+        android:translationX="25dp"
+        android:translationY="160dp"/>
 
+    <!-- Horizontal Layout for "Already registered?" text and "Login" text (styled like a button) -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:translationY="170dp">
+
+        <TextView
+            android:id="@+id/titleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already registered?"
+            android:textColor="@android:color/white"
+            android:textSize="17sp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:id="@+id/LoginTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"/>
+    </LinearLayout>
+
+    <!-- Doctor Button -->
+    <Button
+        android:id="@+id/Gotodoctor"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="#BFD3DA"
+        android:text="Doctor"
+        android:textColor="@color/ourblue"
+        android:textStyle="bold"
+        android:translationY="190dp"/>
+
+    <!-- Patient Button -->
+    <Button
+        android:id="@+id/Gotopatient"
+        android:layout_width="121dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#BFD3DA"
+        android:text="Patient"
+        android:textColor="@color/ourblue"
+        android:textStyle="bold"
+        android:translationY="190dp"/>
 
 </LinearLayout>
-
-

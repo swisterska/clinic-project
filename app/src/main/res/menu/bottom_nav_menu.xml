@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_chat"
+        android:icon="@drawable/chat"
+        android:title="Chat" />
+    <item
+        android:id="@+id/nav_prescriptions"
+        android:icon="@drawable/prescriptions"
+        android:title="Prescriptions" />
+    <item
+        android:id="@+id/nav_appointments"
+        android:icon="@drawable/appointments"
+        android:title="Appointments" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/profile"
+        android:title="Profile" />
+</menu>
