@@ -1,46 +1,44 @@
 package com.example.eclinic.logRegClasses
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
+import com.example.eclinic.R
+import com.example.eclinic.firebase.Specialization
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import android.widget.Toast
-import androidx.core.content.ContextCompat
 import java.time.LocalDate
-import java.util.Calendar
-import android.app.DatePickerDialog
-import com.example.eclinic.R
+import java.util.*
 
 class RegisterActivity : BaseActivity() {
 
-    // Declare variables for UI elements
+    // UI Elements
     private lateinit var btnPatient: Button
     private lateinit var btnDoctor: Button
+    private lateinit var btnAdmin:Button
     private lateinit var inputName: EditText
     private lateinit var inputSurname: EditText
     private lateinit var inputDob: EditText
-    private lateinit var inputSpecialization: EditText
+    private lateinit var specializationSpinner: Spinner
     private lateinit var inputEmail: EditText
     private lateinit var inputPhone: EditText
     private lateinit var inputPassword: EditText
     private lateinit var inputPasswordRepeat: EditText
     private lateinit var registerButton: Button
-
     private lateinit var btnTogglePassword: ImageButton
     private lateinit var btnToggleConfirmPassword: ImageButton
 
+    // Firebase
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
+    // Other
     private var selectedDob: LocalDate? = null
-
-
-
-
-    private var selectedRole: String = "PATIENT"  // Default to Patient
+    private var selectedRole: String = "PATIENT"  // Default role
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,13 +50,13 @@ class RegisterActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        // Initialize all views
+        // Initialize views
         btnPatient = findViewById(R.id.btnPatient)
         btnDoctor = findViewById(R.id.btnDoctor)
         inputName = findViewById(R.id.etName)
         inputSurname = findViewById(R.id.etSurname)
         inputDob = findViewById(R.id.etDob)
-        inputSpecialization = findViewById(R.id.etSpecialization)
+        specializationSpinner = findViewById(R.id.spinnerSpecialization)
         inputEmail = findViewById(R.id.etEmail)
         inputPhone = findViewById(R.id.etPhone)
         inputPassword = findViewById(R.id.etPassword)
@@ -66,26 +64,36 @@ class RegisterActivity : BaseActivity() {
         registerButton = findViewById(R.id.btnRegister)
         btnTogglePassword = findViewById(R.id.btnTogglePassword)
         btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword)
+        btnAdmin = findViewById(R.id.btnAdmin)
 
-        // Set default selection to Patient
+        // Default styles
         btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
         btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
         registerButton.setBackgroundColor(ContextCompat.getColor(this, R.color.ourblue))
 
-        // Handle toggle between Patient and Doctor
+        // Role toggles
         btnPatient.setOnClickListener {
             selectedRole = "PATIENT"
             toggleButtonSelection()
             inputDob.visibility = EditText.VISIBLE
-            inputSpecialization.visibility = EditText.GONE
+            specializationSpinner.visibility = EditText.GONE
         }
 
         btnDoctor.setOnClickListener {
             selectedRole = "DOCTOR"
             toggleButtonSelection()
             inputDob.visibility = EditText.GONE
-            inputSpecialization.visibility = EditText.VISIBLE
+            specializationSpinner.visibility = EditText.VISIBLE
         }
+
+
+        btnAdmin.setOnClickListener {
+            selectedRole = "ADMIN"
+            toggleButtonSelection()
+            inputDob.visibility = View.GONE
+            specializationSpinner.visibility = View.GONE
+        }
+
 
         registerButton.setOnClickListener {
             registerUser()
@@ -103,8 +111,15 @@ class RegisterActivity : BaseActivity() {
             togglePasswordVisibility(inputPasswordRepeat, btnToggleConfirmPassword)
         }
 
-    }
+        // Spinner setup
+        val specializationList = mutableListOf("Specialization").apply {
+            addAll(Specialization.values().map { it.name })
+        }
 
+        val specializationAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, specializationList)
+        specializationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        specializationSpinner.adapter = specializationAdapter
+    }
 
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
@@ -131,18 +146,26 @@ class RegisterActivity : BaseActivity() {
         editText.setSelection(editText.text.length)
     }
 
-
-
-    // Toggle button selection (highlight the selected role button)
     private fun toggleButtonSelection() {
-        if (selectedRole == "PATIENT") {
-            btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
-            btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-        } else {
-            btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-            btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+        when (selectedRole) {
+            "PATIENT" -> {
+                btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+                btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+            }
+            "DOCTOR" -> {
+                btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+            }
+            "ADMIN" -> {
+                btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+            }
         }
     }
+
 
     private fun validateRegisterDetails(): Boolean {
         return when {
@@ -178,13 +201,14 @@ class RegisterActivity : BaseActivity() {
                 showErrorSnackBar(getString(R.string.err_msg_enter_dob), true)
                 false
             }
-            selectedRole == "DOCTOR" && inputSpecialization.text.trim().isEmpty() -> {
+            selectedRole == "DOCTOR" && (specializationSpinner.selectedItem.toString() == "Specialization" || specializationSpinner.selectedItem.toString().trim().isEmpty()) -> {
                 showErrorSnackBar(getString(R.string.err_msg_enter_specialization), true)
                 false
             }
             else -> true
         }
     }
+
 
     private fun registerUser() {
         if (validateRegisterDetails()) {
@@ -194,8 +218,9 @@ class RegisterActivity : BaseActivity() {
             val phone = inputPhone.text.toString().trim()
             val password = inputPassword.text.toString().trim()
             val dob = inputDob.text.toString().trim()
-            val specialization = inputSpecialization.text.toString().trim()
-            val role = selectedRole  // Use the selected role (either "PATIENT" or "DOCTOR")
+            val selectedSpec = specializationSpinner.selectedItem.toString().trim()
+            val specialization = Specialization.fromString(selectedSpec)?.displayName ?: selectedSpec
+            val role = selectedRole
 
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
@@ -206,27 +231,30 @@ class RegisterActivity : BaseActivity() {
                             false
                         )
 
-                        // Create a HashMap to store user details
-                        val userData = hashMapOf(
+                        val userData = hashMapOf<String, Any>(
                             "id" to firebaseUser.uid,
                             "firstName" to name,
                             "lastName" to surname,
                             "email" to email,
                             "phoneNumber" to phone,
                             "role" to role,
-                            "profilePictureUrl" to "",
+                            "profilePictureUrl" to ""
                         )
 
-                        // Add additional fields based on role
-                        if (role == "PATIENT") {
-                            userData["dateOfBirth"] = dob
-                        } else {
-                            userData["specialization"] = specialization
+                        when (role) {
+                            "PATIENT" -> {
+                                userData["dateOfBirth"] = dob
+                            }
+                            "DOCTOR" -> {
+                                userData["specialization"] = specialization
+                                userData["verified"] = false
+                            }
+                            "ADMIN" -> {
+                                userData["verified"] = true
+                            }
                         }
 
 
-
-                        // Save user data to Firestore
                         FirebaseFirestore.getInstance().collection("users")
                             .document(firebaseUser.uid)
                             .set(userData)
@@ -239,7 +267,6 @@ class RegisterActivity : BaseActivity() {
                             .addOnFailureListener { e ->
                                 Toast.makeText(this@RegisterActivity, "Error saving data: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
-
                     } else {
                         showErrorSnackBar(task.exception!!.message.toString(), true)
                     }

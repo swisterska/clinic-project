@@ -8,16 +8,29 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation" />
+        android:layout_above="@id/bottom_navigation" >
+
+        <ImageButton
+            android:id="@+id/makeAnAppointment"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:background="#00FFFFFF"
+            android:src="@drawable/calendar"
+            android:textStyle="bold"
+            android:translationY="550dp" />
+    </FrameLayout>
 
     <TextView
-        android:id="@+id/petNameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:text="We"
-        android:textSize="30dp"
-        android:textColor="@color/black"/>
+        android:id="@+id/tvWelcomeMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Welcome, User"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
@@ -31,4 +44,5 @@
         app:itemTextColor="@color/black"
         app:labelVisibilityMode="labeled"
         app:itemPaddingBottom="-5dp"/>
+
 </RelativeLayout>

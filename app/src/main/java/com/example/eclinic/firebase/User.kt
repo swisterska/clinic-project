@@ -17,6 +17,7 @@ data class User(
     var profilePictureUrl: String = "",
     var dateOfBirth: String = "",
     var specialization: String = "",
+    var verified: Boolean = true,
 
 
 ) {
@@ -58,8 +59,11 @@ data class User(
 
 
                 // Retrieve the "profilePictureUrl" field as a string, or use an empty string if it's missing
-                profilePictureUrl = data["profilePictureUrl"] as? String ?: ""
-            )
+                profilePictureUrl = data["profilePictureUrl"] as? String ?: "",
+
+                verified = data["verified"] as? Boolean ?: true
+
+                )
         }
     }
 }
