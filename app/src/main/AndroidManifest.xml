@@ -36,20 +36,13 @@
             android:name=".patientClasses.ChatPatientActivity"
             android:exported="false" />
         <activity
-            android:name=".patient.AppointmentPatientActivity"
+            android:name=".patientClasses.PrescriptionsActivity"
             android:exported="false" />
         <activity
-            android:name=".patient.PrescriptionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".patient.ChatPatientActivity"
-            android:exported="false" />
-        <activity
-            android:name=".pomocy"
-            android:exported="false" />
-        <activity
-            android:name=".doctorClasses.MainPageDoctor"
-            android:exported="false" />
+            android:name=".patientClasses.EditProfileActivity"
+            android:exported="false" /> <activity
+        android:name=".doctorClasses.MainPageDoctor"
+        android:exported="false" />
         <activity
             android:name=".patientClasses.MainPagePatient"
             android:exported="false" />

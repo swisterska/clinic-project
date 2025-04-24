@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.widget.ImageButton
 import android.widget.TextView
 import com.example.eclinic.R
+import com.example.eclinic.logRegClasses.LogRegActivity
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -34,7 +36,7 @@ class MainPagePatient : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
                         val firstName = document.getString("firstName") ?: "User"
-                        welcomeText.text = "Welcome, dr. $firstName"
+                        welcomeText.text = "Welcome, $firstName"
                     }
                 }
                 .addOnFailureListener {
@@ -42,9 +44,6 @@ class MainPagePatient : AppCompatActivity() {
                 }
 
         }
-
-
-
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
