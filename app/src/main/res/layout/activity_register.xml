@@ -62,7 +62,20 @@
                 android:background="@color/unselectedbutton"
                 android:text="Doctor"
                 android:textColor="@android:color/black" />
+
+            <!-- Add a third button for Admin -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAdmin"
+                android:layout_width="185dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@color/unselectedbutton"
+                android:text="Admin"
+                android:textColor="@android:color/black" />
+
         </LinearLayout>
+
 
         <!-- Common Fields -->
         <EditText
@@ -71,6 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="8dp"/>
 
         <EditText
@@ -92,15 +106,15 @@
             android:layout_height="wrap_content" />
 
 
-        <!-- Doctor Only -->
-        <EditText
-            android:id="@+id/etSpecialization"
-            android:hint="Specialization"
+        <Spinner
+            android:id="@+id/spinnerSpecialization"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:padding="12dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp"
+            android:spinnerMode="dropdown"/>
+
 
         <EditText
             android:id="@+id/etEmail"
