@@ -36,7 +36,7 @@ enum class Specialization(val displayName: String) {
     VASCULAR_SURGEON("Vascular Surgeon"),
     PAIN_MANAGEMENT_SPECIALIST("Pain Management Specialist"),
     DIFFERENT("Different/None of the above"),
-    DR_HOUSE("Dr.House");
+    DR_HOUSE("Dr_House");
 
     companion object {
         fun fromString(value: String): Specialization? =
