@@ -3,27 +3,38 @@ package com.example.eclinic.patientClasses
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
-import com.example.eclinic.chat.ChatPatientActivity
+import com.example.eclinic.logRegClasses.LogRegActivity
+import com.example.eclinic.logRegClasses.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
 
 class MainPagePatient : AppCompatActivity() {
 
     private lateinit var welcomeText: TextView
     private lateinit var bottomNav: BottomNavigationView
+    private lateinit var scheduleAnApointment: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_page_patient)
 
-        // Inicjalizacja widoków
         welcomeText = findViewById(R.id.petNameTextView)
         bottomNav = findViewById(R.id.bottom_navigation)
+        scheduleAnApointment = findViewById(R.id.ScheduleAnApointmentBtn)
 
-        // Pobierz dane użytkownika z Firestore (jeśli masz takie)
+        scheduleAnApointment.setOnClickListener {
+            val intent = Intent(this, RegisterForAppointmentPatient::class.java)
+            startActivity(intent)
+        }
+
+
+
+        // Pobierz dane użytkownika z Firestore
         val db = FirebaseFirestore.getInstance()
         val uid = FirebaseAuth.getInstance().currentUser?.uid
 

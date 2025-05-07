@@ -8,11 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.eclinic.R
-import com. example. eclinic. firebase. Doctor
+import com.example.eclinic.firebase.Doctor
 
 class DoctorAdapter(private val doctorList: List<Doctor>) :
     RecyclerView.Adapter<DoctorAdapter.DoctorViewHolder>() {
 
+    // ViewHolder class holds the layout for each doctor item
     class DoctorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val profilePic: ImageView = view.findViewById(R.id.doctor_image)
         val name: TextView = view.findViewById(R.id.doctor_name)
@@ -28,11 +29,12 @@ class DoctorAdapter(private val doctorList: List<Doctor>) :
 
     override fun onBindViewHolder(holder: DoctorViewHolder, position: Int) {
         val doctor = doctorList[position]
+
         holder.name.text = doctor.name
         holder.bio.text = doctor.bio
         holder.description.text = doctor.description
 
-        // Load doctor image using Glide
+        // Load the profile image using Glide
         Glide.with(holder.itemView.context)
             .load(doctor.profilePicUrl)
             .placeholder(R.drawable.default_image)
