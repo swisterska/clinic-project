@@ -3,10 +3,9 @@ package com.example.eclinic.patientClasses
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
-import com.example.eclinic.logRegClasses.LogRegActivity
+import com.example.eclinic.chat.ChatPatientActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
