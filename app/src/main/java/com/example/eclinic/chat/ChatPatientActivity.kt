@@ -25,7 +25,7 @@ class ChatPatientActivity : AppCompatActivity() {
     private lateinit var sendButton: MaterialButton
 
     private val client = OkHttpClient()
-    private val apiKey = "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"
+    private val apiKey = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
