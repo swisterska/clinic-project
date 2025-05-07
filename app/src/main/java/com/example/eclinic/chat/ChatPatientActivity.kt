@@ -25,7 +25,6 @@ class ChatPatientActivity : AppCompatActivity() {
     private lateinit var sendButton: MaterialButton
 
     private val client = OkHttpClient()
-    private val apiKey = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +50,6 @@ class ChatPatientActivity : AppCompatActivity() {
             if (userText.isNotBlank()) {
                 addMessage(userText, isUser = true)
                 inputEditText.text?.clear()
-                sendMessageToOpenAI(userText)
             }
         }
     }
@@ -62,62 +60,4 @@ class ChatPatientActivity : AppCompatActivity() {
         recyclerView.scrollToPosition(messages.size - 1)
     }
 
-    private fun sendMessageToOpenAI(userMessage: String) {
-        val json = JSONObject().apply {
-            put("model", "gpt-4.1")
-            put("messages", JSONArray().apply {
-                put(JSONObject().apply {
-                    put("role", "user")
-                    put("content", userMessage)
-                })
-            })
-        }
-
-        val request = Request.Builder()
-            .url("https://api.openai.com/v1/chat/completions")
-            .addHeader("Authorization", "Bearer $apiKey")
-            .post(RequestBody.create(MediaType.get("application/json"), json.toString()))
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                runOnUiThread {
-                    addMessage("Błąd połączenia: ${e.localizedMessage}", isUser = false)
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val body = response.body()?.string()
-
-                if (response.isSuccessful) {
-                    try {
-                        val jsonResponse = JSONObject(body)
-                        val content = jsonResponse.getJSONArray("choices")
-                            .getJSONObject(0)
-                            .getJSONObject("message")
-                            .getString("content")
-                        runOnUiThread {
-                            addMessage(content.trim(), isUser = false)
-                        }
-                    } catch (e: Exception) {
-                        runOnUiThread {
-                            addMessage("Błąd parsowania odpowiedzi", isUser = false)
-                        }
-                    }
-                } else {
-                    try {
-                        val errorJson = JSONObject(body)
-                        val errorMessage = errorJson.getJSONObject("error").getString("message")
-                        runOnUiThread {
-                            addMessage("Błąd API OpenAI: $errorMessage", isUser = false)
-                        }
-                    } catch (e: Exception) {
-                        runOnUiThread {
-                            addMessage("Wystąpił błąd API", isUser = false)
-                        }
-                    }
-                }
-            }
-        })
-    }
 }
