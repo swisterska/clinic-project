@@ -1,7 +1,6 @@
 package com.example.eclinic.chat
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -11,9 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.button.MaterialButton
 import okhttp3.*
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.IOException
 import com.example.eclinic.R
 
 class ChatPatientActivity : AppCompatActivity() {
