@@ -1,0 +1,172 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#BFD3DA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:paddingTop="10dp"
+            android:layout_marginBottom="16dp"> <ImageButton
+            android:id="@+id/GoBackButton"
+            android:layout_width="38dp"
+            android:layout_height="34dp"
+            android:layout_marginEnd="10dp"
+            android:background="#00FFFFFF"
+            android:src="@drawable/gobackbutton" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="45dp"
+                android:layout_weight="1"
+                android:background="@color/unselectedbutton"
+                android:gravity="center"
+                android:text="Change Your Data"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="55dp"
+                android:layout_height="60dp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/editName"
+            android:hint="Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/editSurname"
+            android:hint="Surname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/editBirthDate"
+            android:hint=" Date of Birth (YYYY-MM-DD)"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/editEmail"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/editPhone"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editOldPassword"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Current Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <ImageButton
+                android:id="@+id/btnToggleOldPassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/eyeclosed" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editNewPassword"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="New Password"
+                android:inputType="textPassword"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp" />
+
+            <ImageButton
+                android:id="@+id/btnToggleNewPassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/eyeclosed" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"> <EditText
+            android:id="@+id/editConfirmNewPassword"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:hint="Confirm New Password"
+            android:inputType="textPassword"
+            android:padding="12dp" />
+
+            <ImageButton
+                android:id="@+id/btnToggleConfirmNewPassword"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:scaleType="centerInside"
+                android:src="@drawable/eyeclosed" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnConfirm"
+            android:text="Confirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/ourblue"
+            android:textColor="@color/black"
+            android:padding="12dp" />
+
+    </LinearLayout>
+</ScrollView>

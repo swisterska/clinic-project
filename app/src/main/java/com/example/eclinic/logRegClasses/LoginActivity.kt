@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import com.example.eclinic.R
 import com.example.eclinic.doctorClasses.MainPageDoctor
 import com.example.eclinic.patientClasses.MainPagePatient
+import com.example.eclinic.adminClasses.AdminMainPage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -16,7 +17,7 @@ class LoginActivity : BaseActivity() {
     private lateinit var inputEmail: EditText
     private lateinit var inputPassword: EditText
     private lateinit var loginButton: Button
-    private val db = FirebaseFirestore.getInstance() // Firestore instance
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,17 +71,29 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    /**
-     * Fetches user role from Firestore and navigates to the correct page.
-     */
     private fun checkUserRole() {
         val user = FirebaseAuth.getInstance().currentUser
         user?.let {
             db.collection("users").document(it.uid).get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        val role = document.getString("role") ?: "PATIENT" // Default to PATIENT
-                        navigateToMainPage(role)
+                        val role = document.getString("role") ?: "PATIENT"
+
+                        if (role == "DOCTOR") {
+                            val verified = document.getBoolean("verified") ?: false
+                            if (!verified) {
+                                showErrorSnackBar("Your account is pending admin verification.", true)
+                                FirebaseAuth.getInstance().signOut()
+                                return@addOnSuccessListener
+                            }
+                            navigateToMainPage(role)
+                        } else if (role == "ADMIN") {
+                            val intent = Intent(this, AdminMainPage::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            navigateToMainPage(role)
+                        }
                     } else {
                         showErrorSnackBar("User data not found.", true)
                     }
@@ -91,9 +104,6 @@ class LoginActivity : BaseActivity() {
         }
     }
 
-    /**
-     * Redirects user based on their role.
-     */
     private fun navigateToMainPage(role: String) {
         val intent = if (role == "DOCTOR") {
             Intent(this, MainPageDoctor::class.java)
