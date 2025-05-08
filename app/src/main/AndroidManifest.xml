@@ -19,6 +19,12 @@
             android:name=".patientClasses.RegisterForAppointmentPatient"
             android:exported="false"/>
         <activity
+            android:name=".calendar.WeeklyViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".calendar.MainCalendarActivity"
+            android:exported="false" />
+        <activity
             android:name=".doctorClasses.ProfileDocActivity"
             android:exported="false" />
         <activity
@@ -37,14 +43,14 @@
             android:name=".patientClasses.AppointmentsActivity"
             android:exported="false" />
         <activity
-            android:name=".patientClasses.ChatPatientActivity"
+            android:name=".chat.ChatPatientActivity"
             android:exported="false" />
         <activity
             android:name=".patientClasses.PrescriptionsActivity"
             android:exported="false" />
         <activity
             android:name=".patientClasses.EditProfileActivity"
-            android:exported="false" />
+            android:exported="false"/>
         <activity
             android:name=".doctorClasses.MainPageDoctor"
             android:exported="false" />
@@ -65,6 +71,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

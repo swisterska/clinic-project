@@ -8,13 +8,15 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#F80303</color>
+    <color name="grey">#807C7C</color>
     <color name="colorSnackBarError">#F80303</color>
     <color name="colorSnackBarSuccess">#4CF803</color>
     <color name="ourblue">#2596BE</color>
     <color name="selectedbutton"> #E5E2E2</color>
     <color name="unselectedbutton">#96A9A9</color>
     <color name="ourgrey">#BFD3DA</color>
-    #
+    <color name="ourbluebutlighter">#552596BE</color>
+
 
 
 

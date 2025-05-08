@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,6 +65,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:24.3.0")
     implementation("com.google.firebase:firebase-auth-ktx:21.0.5")
     implementation ("com.google.android.material:material:1.9.0")
+
 
 
 }
