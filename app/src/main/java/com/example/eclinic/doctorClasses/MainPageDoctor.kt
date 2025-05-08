@@ -39,7 +39,7 @@ class MainPageDoctor : AppCompatActivity() {
                     }
                 }
                 .addOnFailureListener {
-                    welcomeText.text = "Welcome, User"
+                    welcomeText.text = "Welcome, Doctor"
                 }
 
         }

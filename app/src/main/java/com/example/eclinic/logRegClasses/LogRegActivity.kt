@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
+import com.example.eclinic.calendar.MainCalendarActivity
 import com.example.eclinic.doctorClasses.MainPageDoctor
 import com.example.eclinic.patientClasses.MainPagePatient
 
@@ -52,6 +53,13 @@ class LogRegActivity : AppCompatActivity() {
         val patientButton = findViewById<Button>(R.id.Gotopatient)
         patientButton.setOnClickListener {
             val intent = Intent(this, MainPagePatient::class.java)
+            startActivity(intent)
+        }
+
+        // Set up the "Patient" button to navigate to MainPagePatient
+        val calendarButton = findViewById<Button>(R.id.GotoCalendar)
+        calendarButton.setOnClickListener {
+            val intent = Intent(this, MainCalendarActivity::class.java)
             startActivity(intent)
         }
     }
