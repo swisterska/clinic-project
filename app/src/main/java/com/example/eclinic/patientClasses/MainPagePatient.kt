@@ -6,6 +6,7 @@ import android.widget.TextView
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
+import com.example.eclinic.chat.ChatPatientActivity
 import com.example.eclinic.logRegClasses.LogRegActivity
 import com.example.eclinic.logRegClasses.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
