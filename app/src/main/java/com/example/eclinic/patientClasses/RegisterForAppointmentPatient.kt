@@ -127,8 +127,8 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
                     doctorList.add(
                         Doctor(
                             name = "${doctor.firstName} ${doctor.lastName}",
-                            bio = doctor.specialization,
-                            description = description, // Use the actual description from Firestore
+                            bio = "",
+                            description = doctor.specialization,
                             profilePicUrl = doctor.profilePictureUrl
                         )
                     )

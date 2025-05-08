@@ -42,6 +42,7 @@ data class User(
          *
          */
         fun fromMap(data: Map<String, Any?>): User {
+            val role = Role.valueOf(data["role"] as? String ?: "UNDEFINED")
             return User(
                 // Retrieve the "id" field as a string, or use an empty string if it's missing
                 id = data["id"] as? String ?: "",
@@ -57,13 +58,15 @@ data class User(
                 // Retrieve the "phoneNumber" field as a string, or use an empty string if it's missing
                 phoneNumber = data["phoneNumber"] as? String ?: "",
 
-
                 // Retrieve the "profilePictureUrl" field as a string, or use an empty string if it's missing
                 profilePictureUrl = data["profilePictureUrl"] as? String ?: "",
 
-                verified = data["verified"] as? Boolean ?: true
+                verified = data["verified"] as? Boolean ?: true,
 
-                )
-        }
+                specialization = if (role == Role.DOCTOR) {
+                    data["specialization"] as? String ?: ""
+                }
+                else "")
     }
+}
 }
