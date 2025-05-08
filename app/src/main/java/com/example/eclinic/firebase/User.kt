@@ -17,7 +17,7 @@ data class User(
     var profilePictureUrl: String = "",
     var dateOfBirth: String = "",
     var specialization: String = "",
-    var verified: Boolean = true,
+    var verified: Boolean = true
 
 
 ) {
