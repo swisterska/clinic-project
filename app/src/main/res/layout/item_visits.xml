@@ -1,0 +1,49 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="5dp"
+    android:elevation="4dp"
+    android:radius="12dp"
+    android:backgroundTint="#FFFFFF"
+    android:layout_marginHorizontal="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:weightSum="1">
+
+        <!-- Left Side: Visit Name and Description -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/visit_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EKG"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#000" />
+
+        </LinearLayout>
+
+        <!-- Right Side: Price -->
+        <TextView
+            android:id="@+id/visit_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:gravity="end"
+            android:text="120 PLN"
+            android:textSize="16sp"
+            android:textColor="#000"
+            android:textStyle="bold" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

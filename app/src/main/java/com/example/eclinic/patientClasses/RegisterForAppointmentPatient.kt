@@ -1,5 +1,6 @@
 package com.example.eclinic.patientClasses
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -44,7 +45,12 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
 
         // Setup RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        doctorAdapter = DoctorAdapter(doctorList)
+        doctorAdapter = DoctorAdapter(doctorList) { selectedDoctor ->
+            val intent = Intent(this, VisitTypeActivity::class.java)
+            intent.putExtra("specialization", selectedDoctor.description) // assuming this stores specialization
+            intent.putExtra("doctorName", selectedDoctor.name)
+            startActivity(intent)
+        }
         recyclerView.adapter = doctorAdapter
 
         // Setup filtering
@@ -92,7 +98,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
                     if (name.startsWith(query) || parts.any { it.startsWith(query) }) return@filter true
 
                     // Allow fuzzy matches (typos), but only after no prefix match
-                    parts.any { levenshtein(it, query) <= 2 }
+                    parts.any { typos(it, query) <= 2 }
                 }
 
                 // Update the list and notify adapter
@@ -144,7 +150,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
             }
     }
 
-    private fun levenshtein(a: String, b: String): Int {
+    private fun typos(a: String, b: String): Int {
         val dp = Array(a.length + 1) { IntArray(b.length + 1) }
 
         for (i in 0..a.length) dp[i][0] = i

@@ -45,16 +45,11 @@ class LogRegActivity : AppCompatActivity() {
         // Set up the "Doctor" button to navigate to MainPageDoctor
         val doctorButton = findViewById<Button>(R.id.Gotodoctor)
         doctorButton.setOnClickListener {
-            val intent = Intent(this, MainPageDoctor::class.java)
+            val intent = Intent(this, MainCalendarActivity::class.java)
             startActivity(intent)
         }
 
-        // Set up the "Patient" button to navigate to MainPagePatient
-        val patientButton = findViewById<Button>(R.id.Gotopatient)
-        patientButton.setOnClickListener {
-            val intent = Intent(this, MainPagePatient::class.java)
-            startActivity(intent)
-        }
+
 
 
     }

@@ -6,7 +6,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.firebase.Specialization
+import com.example.eclinic.firebase.Visit
+import com.example.eclinic.firebase.visitsBySpecialization
 import com.google.firebase.firestore.FirebaseFirestore
 
 class VisitTypeActivity : AppCompatActivity() {
@@ -18,31 +23,23 @@ class VisitTypeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_visit_type)
 
-        visitTypesTextView = findViewById(R.id.visit_types_text_view)
+        val specializationName = intent.getStringExtra("specialization") ?: return
+        val doctorName = intent.getStringExtra("doctorName")
 
-        val specialization = intent.getStringExtra("specialization")
+        val specialization = Specialization.fromString(specializationName)
 
         if (specialization != null) {
-            loadVisitTypesForSpecialization(specialization)
-        } else {
-            visitTypesTextView.text = "No specialization found"
+            val visits = visitsBySpecialization[specialization]
+            if (visits != null) {
+                setupRecyclerView(visits)
+            }
         }
     }
 
-    private fun loadVisitTypesForSpecialization(specialization: String) {
-        db.collection("visitTypes")
-            .whereEqualTo("specialization", specialization)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    visitTypesTextView.text = "No visit types available for $specialization"
-                } else {
-                    val visitTypes = documents.map { it.getString("type") ?: "Unknown" }
-                    visitTypesTextView.text = "Visit Types for $specialization:\n" + visitTypes.joinToString("\n")
-                }
-            }
-            .addOnFailureListener {
-                visitTypesTextView.text = "Error loading visit types"
-            }
+    private fun setupRecyclerView(visits: List<Visit>) {
+        val recyclerView = findViewById<RecyclerView>(R.id.visit_recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = VisitAdapter(visits)
     }
+
 }

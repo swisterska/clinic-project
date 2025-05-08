@@ -1,0 +1,127 @@
+package com.example.eclinic.firebase
+
+data class Visit(
+    val name: String,
+    val price: String
+)
+
+val visitsBySpecialization = mapOf(
+    Specialization.CARDIOLOGIST to listOf(
+        Visit("EKG", "150 PLN"),
+        Visit("Echocardiogram", "250 PLN"),
+        Visit("Stress Test", "300 PLN")
+    ),
+    Specialization.DERMATOLOGIST to listOf(
+        Visit("Skin Examination", "120 PLN"),
+        Visit("Mole Removal", "180 PLN"),
+        Visit("Acne Treatment", "160 PLN")
+    ),
+    Specialization.NEUROLOGIST to listOf(
+        Visit("EEG", "220 PLN"),
+        Visit("Neurological Exam", "200 PLN"),
+        Visit("MRI Consultation", "300 PLN")
+    ),
+    Specialization.PEDIATRICIAN to listOf(
+        Visit("Routine Checkup", "100 PLN"),
+        Visit("Vaccination", "80 PLN"),
+        Visit("Developmental Assessment", "150 PLN")
+    ),
+    Specialization.GENERAL_PRACTITIONER to listOf(
+        Visit("General Consultation", "100 PLN"),
+        Visit("Flu Shot", "60 PLN"),
+        Visit("Health Screening", "130 PLN")
+    ),
+    Specialization.ORTHOPEDIC_SURGEON to listOf(
+        Visit("Joint Examination", "180 PLN"),
+        Visit("Fracture Follow-up", "160 PLN"),
+        Visit("MRI Review", "250 PLN")
+    ),
+    Specialization.GYNECOLOGIST to listOf(
+        Visit("Pap Smear", "150 PLN"),
+        Visit("Ultrasound", "200 PLN"),
+        Visit("Birth Control Consultation", "130 PLN")
+    ),
+    Specialization.ONCOLOGIST to listOf(
+        Visit("Chemotherapy Planning", "350 PLN"),
+        Visit("Cancer Screening", "300 PLN"),
+        Visit("Treatment Follow-up", "280 PLN")
+    ),
+    Specialization.PSYCHIATRIST to listOf(
+        Visit("Initial Consultation", "200 PLN"),
+        Visit("Therapy Session", "180 PLN"),
+        Visit("Medication Management", "150 PLN")
+    ),
+    Specialization.GASTROENTEROLOGIST to listOf(
+        Visit("Colonoscopy Prep Consult", "220 PLN"),
+        Visit("Stomach Pain Evaluation", "180 PLN"),
+        Visit("Liver Function Review", "200 PLN")
+    ),
+    Specialization.NEPHROLOGIST to listOf(
+        Visit("Kidney Function Assessment", "210 PLN"),
+        Visit("Dialysis Planning", "300 PLN"),
+        Visit("Urine Test Review", "150 PLN")
+    ),
+    Specialization.PULMONOLOGIST to listOf(
+        Visit("Pulmonary Function Test", "220 PLN"),
+        Visit("Asthma Check-up", "180 PLN"),
+        Visit("Sleep Apnea Consult", "250 PLN")
+    ),
+    Specialization.RHEUMATOLOGIST to listOf(
+        Visit("Joint Pain Evaluation", "190 PLN"),
+        Visit("Autoimmune Panel Review", "230 PLN"),
+        Visit("Arthritis Treatment", "210 PLN")
+    ),
+    Specialization.UROLOGIST to listOf(
+        Visit("Prostate Exam", "170 PLN"),
+        Visit("UTI Consultation", "150 PLN"),
+        Visit("Ultrasound (Bladder/Kidney)", "200 PLN")
+    ),
+    Specialization.OTOLARYNGOLOGIST to listOf(
+        Visit("Hearing Test", "160 PLN"),
+        Visit("Throat Exam", "140 PLN"),
+        Visit("Sinus Check-up", "180 PLN")
+    ),
+    Specialization.RADIOLOGIST to listOf(
+        Visit("X-ray Review", "130 PLN"),
+        Visit("CT Scan Analysis", "300 PLN"),
+        Visit("MRI Analysis", "320 PLN")
+    ),
+    Specialization.PATHOLOGIST to listOf(
+        Visit("Biopsy Analysis", "350 PLN"),
+        Visit("Lab Result Review", "200 PLN")
+    ),
+    Specialization.IMMUNOLOGIST to listOf(
+        Visit("Immune Function Test", "250 PLN"),
+        Visit("Allergy Blood Panel", "280 PLN")
+    ),
+    Specialization.INFECTIOUS_DISEASE_SPECIALIST to listOf(
+        Visit("Infection Diagnosis", "200 PLN"),
+        Visit("Antibiotic Therapy Consult", "180 PLN")
+    ),
+    Specialization.ALLERGIST to listOf(
+        Visit("Skin Prick Test", "220 PLN"),
+        Visit("Allergy Management Plan", "200 PLN")
+    ),
+    Specialization.SPORTS_MEDICINE_SPECIALIST to listOf(
+        Visit("Sports Injury Evaluation", "180 PLN"),
+        Visit("Rehabilitation Plan", "200 PLN")
+    ),
+    Specialization.PLASTIC_SURGEON to listOf(
+        Visit("Consultation", "250 PLN"),
+        Visit("Scar Revision", "400 PLN")
+    ),
+    Specialization.FAMILY_MEDICINE to listOf(
+        Visit("Routine Checkup", "120 PLN"),
+        Visit("Preventive Screening", "150 PLN")
+    ),
+    Specialization.VASCULAR_SURGEON to listOf(
+        Visit("Varicose Vein Consult", "200 PLN"),
+        Visit("Doppler Ultrasound", "250 PLN")
+    ),
+    Specialization.DR_HOUSE to listOf(
+        Visit("Rare Disease Consultation", "999 PLN"),
+        Visit("Diagnostic Mystery Session", "1200 PLN")
+    )
+)
+
+

@@ -8,6 +8,8 @@
     android:orientation="vertical"
     android:gravity="center">
 
+
+
     <!-- Register Button -->
     <ImageButton
         android:id="@+id/ChoiceRegisterButton"
@@ -55,21 +57,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:backgroundTint="#BFD3DA"
-        android:text="Doctor"
+        android:text="Calendar"
         android:textColor="@color/ourblue"
         android:textStyle="bold"
         android:translationY="190dp"/>
 
-    <!-- Patient Button -->
-    <Button
-        android:id="@+id/Gotopatient"
-        android:layout_width="121dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#BFD3DA"
-        android:text="Patient"
-        android:textColor="@color/ourblue"
-        android:textStyle="bold"
-        android:translationY="190dp"/>
 
 </LinearLayout>
