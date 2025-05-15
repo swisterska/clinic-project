@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.widget.TextView
 import com.example.eclinic.R
+import com.example.eclinic.calendar.MainCalendarActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -57,7 +58,7 @@ class MainPageDoctor : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_calendar -> {
-                    startActivity(Intent(this, CalendarActivity::class.java))
+                    startActivity(Intent(this, MainCalendarActivity::class.java))
                     true
                 }
                 R.id.navigation_profile -> {

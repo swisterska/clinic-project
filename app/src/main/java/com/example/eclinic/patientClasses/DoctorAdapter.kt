@@ -12,7 +12,8 @@ import com.example.eclinic.firebase.Doctor
 
 class DoctorAdapter(
     private val doctorList: List<Doctor>,
-    private val onDoctorClick: (Doctor) -> Unit
+    private val onDoctorClick: (Doctor) -> Unit,
+    private val onInfoClick: (Doctor) -> Unit
 ) : RecyclerView.Adapter<DoctorAdapter.DoctorViewHolder>() {
 
     class DoctorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -20,6 +21,8 @@ class DoctorAdapter(
         val name: TextView = view.findViewById(R.id.doctor_name)
         val bio: TextView = view.findViewById(R.id.doctor_bio)
         val description: TextView = view.findViewById(R.id.doctor_description)
+        val infoIcon: ImageView = view.findViewById(R.id.info_icon)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DoctorViewHolder {
@@ -43,7 +46,12 @@ class DoctorAdapter(
         holder.itemView.setOnClickListener {
             onDoctorClick(doctor)
         }
+
+        holder.infoIcon.setOnClickListener {
+            onInfoClick(doctor)
+        }
     }
+
 
     override fun getItemCount(): Int = doctorList.size
 }

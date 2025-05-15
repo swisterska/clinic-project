@@ -45,12 +45,19 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
 
         // Setup RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
-        doctorAdapter = DoctorAdapter(doctorList) { selectedDoctor ->
-            val intent = Intent(this, VisitTypeActivity::class.java)
-            intent.putExtra("specialization", selectedDoctor.description) // assuming this stores specialization
-            intent.putExtra("doctorName", selectedDoctor.name)
-            startActivity(intent)
-        }
+        doctorAdapter = DoctorAdapter(
+            doctorList,
+            onDoctorClick = { selectedDoctor ->
+                val intent = Intent(this, VisitTypeActivity::class.java)
+                intent.putExtra("specialization", selectedDoctor.description)
+                intent.putExtra("doctorName", selectedDoctor.name)
+                startActivity(intent)
+            },
+            onInfoClick = { selectedDoctor ->
+                showDoctorInfoDialog(selectedDoctor)
+            }
+        )
+
         recyclerView.adapter = doctorAdapter
 
         // Setup filtering
@@ -169,5 +176,17 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
 
         return dp[a.length][b.length]
     }
+
+    private fun showDoctorInfoDialog(doctor: Doctor) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle(doctor.name)
+        builder.setMessage(
+            "Specialization: ${doctor.description}\n\n" +
+                    "Bio: ${doctor.bio.ifEmpty { "No bio available." }}"
+        )
+        builder.setPositiveButton("Close", null)
+        builder.show()
+    }
+
 
 }
