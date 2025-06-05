@@ -26,7 +26,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
     private lateinit var noResultsText: TextView
 
     private val doctorList = mutableListOf<Doctor>()
-    private var fullDoctorList = listOf<Doctor>() // backup for search
+    private var fullDoctorList = listOf<Doctor>() // Backup for search
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,13 +139,13 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
         builder.setTitle(doctor.name)
         builder.setMessage(
-            "Tytuł: ${doctor.title.ifEmpty { "brak" }}\n" +
-                    "Specjalizacja: ${doctor.description.ifEmpty { "brak" }}\n" +
-                    "Miejsce pracy: ${doctor.workplace.ifEmpty { "brak" }}\n" +
-                    "Numer PWZ: ${doctor.pwz.ifEmpty { "brak" }}\n\n" +
-                    "Opis:\n${doctor.bio.ifEmpty { "brak opisu." }}"
+            "Title: ${doctor.title.ifEmpty { "N/A" }}\n" +
+                    "Specialization: ${doctor.description.ifEmpty { "N/A" }}\n" +
+                    "Workplace: ${doctor.workplace.ifEmpty { "N/A" }}\n" +
+                    "PWZ Number: ${doctor.pwz.ifEmpty { "N/A" }}\n\n" +
+                    "Description:\n${doctor.bio.ifEmpty { "No description available." }}"
         )
-        builder.setPositiveButton("Zamknij", null)
+        builder.setPositiveButton("Close", null)
         builder.show()
     }
 
