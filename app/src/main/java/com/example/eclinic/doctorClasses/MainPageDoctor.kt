@@ -53,22 +53,16 @@ class MainPageDoctor : AppCompatActivity() {
                     startActivity(Intent(this, ChatDocActivity::class.java))
                     true
                 }
-                R.id.navigation_visits_confirm -> {
-                    startActivity(Intent(this, ConfirmVisitsActivity::class.java))
-                    intent.putExtra("userRole", "DOCTOR")
+                R.id.navigation_prescriptions_doc -> {
+                    startActivity(Intent(this, PrescriptionsDocActivity::class.java))
                     true
                 }
                 R.id.navigation_calendar -> {
-                    val calendarIntent = Intent(this, MainCalendarActivity::class.java)
-                    calendarIntent.putExtra("userRole", "DOCTOR")
-                    calendarIntent.putExtra("doctorId", FirebaseAuth.getInstance().currentUser?.uid)
-                    startActivity(calendarIntent)
+                    startActivity(Intent(this, MainCalendarActivity::class.java))
                     true
-
                 }
-
                 R.id.navigation_profile -> {
-                    startActivity(Intent(this, ProfileDocActivity::class.java))
+                    startActivity(Intent(this, DoctorProfileActivity::class.java))
                     true
                 }
                 else -> false

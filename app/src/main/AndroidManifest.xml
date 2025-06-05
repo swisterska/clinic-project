@@ -30,14 +30,18 @@
         <activity
             android:name=".calendar.MainCalendarActivity"
             android:exported="false" />
+        <activity android:name=".doctorClasses.DoctorProfileActivity"
+            android:exported="false"/>
         <activity
-            android:name=".doctorClasses.ProfileDocActivity"
-            android:exported="false" />
+            android:name=".doctorClasses.EditDoctorProfileActivity"
+            android:exported="false"/>
+        <activity android:name=".doctorClasses.ChangeDoctorPasswordActivity"
+            android:exported="false"/>
         <activity
             android:name=".doctorClasses.CalendarActivity"
             android:exported="false" />
         <activity
-            android:name=".doctorClasses.ConfirmVisitsActivity"
+            android:name=".doctorClasses.PrescriptionsDocActivity"
             android:exported="false" />
         <activity
             android:name=".doctorClasses.ChatDocActivity"

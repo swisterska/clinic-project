@@ -6,9 +6,9 @@
         android:title="Chat" />
 
     <item
-        android:id="@+id/navigation_visits_confirm"
+        android:id="@+id/navigation_prescriptions_doc"
         android:icon="@drawable/visitsconf"
-        android:title="Confirm Visits" />
+        android:title="Prescriptions" />
 
     <item
         android:id="@+id/navigation_calendar"
