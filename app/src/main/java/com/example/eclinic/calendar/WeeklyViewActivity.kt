@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,32 +15,32 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
 import com.example.eclinic.calendar.CalendarUtils.daysInWeekArray
 import com.example.eclinic.calendar.CalendarUtils.monthYearFromDate
-import java.time.LocalDate
-import android.widget.Button
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestoreException
-
+import java.time.LocalDate
 
 class WeeklyViewActivity : AppCompatActivity(), CalendarAdapter.OnItemListener {
 
     private lateinit var monthYearText: TextView
     private lateinit var calendarRecyclerView: RecyclerView
+    private lateinit var userRole: String
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weekly_view)
+
         initWidgets()
 
+        // Get role and selected date
+        userRole = intent.getStringExtra("userRole") ?: "PATIENT"
         val dateStr = intent.getStringExtra("selectedDate")
         CalendarUtils.selectedDate = dateStr?.let { LocalDate.parse(it) } ?: LocalDate.now()
 
-
         setWeekView()
         loadAppointmentSlots(CalendarUtils.selectedDate!!)
-
     }
 
     private fun initWidgets() {
@@ -51,26 +52,24 @@ class WeeklyViewActivity : AppCompatActivity(), CalendarAdapter.OnItemListener {
     private fun setWeekView() {
         monthYearText.text = CalendarUtils.selectedDate?.let { monthYearFromDate(it) }
 
-        // Ensures that days is never null
-        val days = CalendarUtils.selectedDate?.let { daysInWeekArray(it) } ?: ArrayList<LocalDate?>()
-
+        val days = CalendarUtils.selectedDate?.let { daysInWeekArray(it) } ?: ArrayList()
         val calendarAdapter = CalendarAdapter(days, this, CalendarUtils.selectedDate)
-        val layoutManager = GridLayoutManager(applicationContext, 7)
-        calendarRecyclerView.layoutManager = layoutManager
+        calendarRecyclerView.layoutManager = GridLayoutManager(applicationContext, 7)
         calendarRecyclerView.adapter = calendarAdapter
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun previousWeekAction(view: View) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate?.minusWeeks(1)
         setWeekView()
+        loadAppointmentSlots(CalendarUtils.selectedDate!!)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun nextWeekAction(view: View) {
         CalendarUtils.selectedDate = CalendarUtils.selectedDate?.plusWeeks(1)
         setWeekView()
+        loadAppointmentSlots(CalendarUtils.selectedDate!!)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -81,40 +80,50 @@ class WeeklyViewActivity : AppCompatActivity(), CalendarAdapter.OnItemListener {
             loadAppointmentSlots(date)
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun loadAppointmentSlots(date: LocalDate) {
         val slotLayout = findViewById<LinearLayout>(R.id.timeSlotsLayout)
         slotLayout.removeAllViews()
 
         val db = Firebase.firestore
         val auth = Firebase.auth
-
-        //TODO: trzeba wrzucic z poprzedniego view wybranego lekarza
         val doctorId = intent.getStringExtra("doctorId") ?: return
 
-        db.collection("appointments")
+        val slotsRef = db.collection("appointments")
             .document(doctorId)
             .collection(date.toString())
             .document("slots")
             .collection("times")
-            .get()
-            .addOnSuccessListener { result ->
-                for (doc in result) {
-                    val time = doc.id
-                    val status = doc.getString("status") ?: "available"
 
-                    val button = Button(this)
-                    button.text = time
-                    button.layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                    )
+        slotsRef.get().addOnSuccessListener { result ->
+            for (doc in result) {
+                val time = doc.id
+                val status = doc.getString("status") ?: "available"
 
+                val button = Button(this)
+                button.text = time
+                button.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+
+                if (userRole == "DOCTOR") {
+                    // Doctor view — just show availability
+                    if (status == "taken") {
+                        button.setBackgroundColor(resources.getColor(android.R.color.holo_red_light))
+                        button.text = "$time (Taken)"
+                    } else {
+                        button.setBackgroundColor(resources.getColor(android.R.color.holo_green_light))
+                        button.text = "$time (Available)"
+                    }
+                    button.isEnabled = false
+                } else {
+                    // Patient view — allow booking
                     if (status == "taken") {
                         button.isEnabled = false
                         button.setBackgroundColor(resources.getColor(android.R.color.darker_gray))
                     } else {
-
-                        //TODO: jak juz zrobimy ConfirmVisitView, to to całe transaction wrzuci się tam
                         button.setOnClickListener {
                             val userId = auth.currentUser?.uid
                             if (userId == null) {
@@ -122,30 +131,23 @@ class WeeklyViewActivity : AppCompatActivity(), CalendarAdapter.OnItemListener {
                                 return@setOnClickListener
                             }
 
-                            // Firestore transaction to ensure slot is available when booking
-                            val slotRef = db.collection("appointments")
-                                .document(doctorId)
-                                .collection(date.toString())
-                                .document("slots")
-                                .collection("times")
-                                .document(time)
+                            val slotDocRef = slotsRef.document(time)
 
                             Firebase.firestore.runTransaction { transaction ->
-                                val snapshot = transaction.get(slotRef)
-                                val status = snapshot.getString("status")
-
-                                if (status == "taken") {
-                                    // If the slot is already taken, cancel the transaction
+                                val snapshot = transaction.get(slotDocRef)
+                                if (snapshot.getString("status") == "taken") {
                                     throw FirebaseFirestoreException("Slot already taken", FirebaseFirestoreException.Code.ABORTED)
                                 } else {
-                                    // If the slot is available, mark it as taken and save the user's ID
-                                    transaction.update(slotRef, mapOf("status" to "taken", "bookedBy" to userId))
+                                    transaction.update(slotDocRef, mapOf(
+                                        "status" to "taken",
+                                        "bookedBy" to userId
+                                    ))
 
-                                    // Save the booking info to the user's appointments collection
                                     val userAppointmentsRef = db.collection("users")
                                         .document(userId)
                                         .collection("appointments")
                                         .document()
+
                                     transaction.set(userAppointmentsRef, mapOf(
                                         "doctorId" to doctorId,
                                         "date" to date.toString(),
@@ -153,37 +155,32 @@ class WeeklyViewActivity : AppCompatActivity(), CalendarAdapter.OnItemListener {
                                     ))
                                 }
                             }.addOnSuccessListener {
-                                // Successfully booked
                                 Toast.makeText(this, "Appointment booked!", Toast.LENGTH_SHORT).show()
-                                loadAppointmentSlots(date) // Refresh UI to show updated status
-                            }.addOnFailureListener { exception ->
-                                if (exception is FirebaseFirestoreException && exception.code == FirebaseFirestoreException.Code.ABORTED) {
-                                    // Handle slot already taken error
-                                    Toast.makeText(this, "Sorry, this slot was taken while you were booking.", Toast.LENGTH_SHORT).show()
+                                loadAppointmentSlots(date)
+                            }.addOnFailureListener { ex ->
+                                if (ex is FirebaseFirestoreException && ex.code == FirebaseFirestoreException.Code.ABORTED) {
+                                    Toast.makeText(this, "Slot already taken.", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    // Handle other errors
-                                    Toast.makeText(this, "Failed to book slot: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Error: ${ex.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
-
                     }
-
-                    slotLayout.addView(button)
                 }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to load timeslots", Toast.LENGTH_SHORT).show()
-            }
-    }
 
-    
+                slotLayout.addView(button)
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to load time slots", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     fun monthlyViewAction(view: View) {
         val intent = Intent(this, MainCalendarActivity::class.java)
         intent.putExtra("selectedDate", CalendarUtils.selectedDate.toString())
+        intent.putExtra("userRole", userRole)
+        intent.putExtra("doctorId", intent.getStringExtra("doctorId"))
         startActivity(intent)
-        finish() // prevents stacking activities
+        finish()
     }
-
 }
