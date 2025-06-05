@@ -62,7 +62,7 @@ class MainPageDoctor : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_profile -> {
-                    startActivity(Intent(this, ProfileDocActivity::class.java))
+                    startActivity(Intent(this, DoctorProfileActivity::class.java))
                     true
                 }
                 else -> false
