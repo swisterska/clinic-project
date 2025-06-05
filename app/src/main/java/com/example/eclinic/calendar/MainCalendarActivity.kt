@@ -10,6 +10,10 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+
+
+
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -19,6 +23,7 @@ class MainCalendarActivity : AppCompatActivity(), CalendarAdapter.OnItemListener
     private var monthYearText: TextView? = null
     private var calendarRecyclerView: RecyclerView? = null
     private var selectedDate: LocalDate? = null
+    private var userRole: String? = null
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +33,7 @@ class MainCalendarActivity : AppCompatActivity(), CalendarAdapter.OnItemListener
 
         // If coming from WeeklyView, grab the passed date
         val selectedDateString = intent.getStringExtra("selectedDate")
+        userRole = intent.getStringExtra("userRole")
         selectedDate = if (selectedDateString != null) {
             LocalDate.parse(selectedDateString)
         } else {
@@ -100,14 +106,22 @@ class MainCalendarActivity : AppCompatActivity(), CalendarAdapter.OnItemListener
 
             val intent = Intent(this, WeeklyViewActivity::class.java)
             intent.putExtra("selectedDate", it.toString())
+            intent.putExtra("userRole", userRole)
+            intent.putExtra("doctorId", FirebaseAuth.getInstance().currentUser?.uid)
+
             startActivity(intent)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun weeklyAction(view: View) {
-        startActivity(Intent(this, WeeklyViewActivity::class.java))
+        val intent = Intent(this, WeeklyViewActivity::class.java)
+        intent.putExtra("selectedDate", selectedDate.toString())
+        intent.putExtra("userRole", userRole)
+        intent.putExtra("doctorId", FirebaseAuth.getInstance().currentUser?.uid)
+        startActivity(intent)
     }
+
 
 
 
