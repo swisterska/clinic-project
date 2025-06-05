@@ -53,8 +53,8 @@ class MainPageDoctor : AppCompatActivity() {
                     startActivity(Intent(this, ChatDocActivity::class.java))
                     true
                 }
-                R.id.navigation_visits_confirm -> {
-                    startActivity(Intent(this, ConfirmVisitsActivity::class.java))
+                R.id.navigation_prescriptions_doc -> {
+                    startActivity(Intent(this, PrescriptionsDocActivity::class.java))
                     true
                 }
                 R.id.navigation_calendar -> {

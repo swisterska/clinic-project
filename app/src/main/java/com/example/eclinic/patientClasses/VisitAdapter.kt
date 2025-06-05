@@ -18,7 +18,7 @@ class VisitAdapter(private val visits: List<Visit>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VisitViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_visits, parent, false) // Use your XML card layout
+            .inflate(R.layout.item_visits, parent, false)
         return VisitViewHolder(view)
     }
 

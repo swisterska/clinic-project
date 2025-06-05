@@ -37,7 +37,7 @@
             android:name=".doctorClasses.CalendarActivity"
             android:exported="false" />
         <activity
-            android:name=".doctorClasses.ConfirmVisitsActivity"
+            android:name=".doctorClasses.PrescriptionsDocActivity"
             android:exported="false" />
         <activity
             android:name=".doctorClasses.ChatDocActivity"

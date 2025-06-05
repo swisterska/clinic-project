@@ -13,4 +13,7 @@
     <string name="err_msg_enter_specialization">Please enter your specialization</string>
 
     <string name="register_success">You are registered succesfully</string>
+
+    <string name="patient_prompt">Choose a patient</string>
+
 </resources>
