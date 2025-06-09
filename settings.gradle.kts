@@ -7,7 +7,10 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        gradlePluginPortal()
+        google()
         mavenCentral()
+        maven("https://jitpack.io")
         gradlePluginPortal()
     }
 }
@@ -16,8 +19,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://jitpack.io")
     }
 }
+
 
 rootProject.name = "eclinic"
 include(":app")

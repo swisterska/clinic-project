@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
 import android.widget.TextView
+import android.widget.Toast
 import com.example.eclinic.R
 import com.example.eclinic.calendar.MainCalendarActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -58,9 +59,17 @@ class MainPageDoctor : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_calendar -> {
-                    startActivity(Intent(this, MainCalendarActivity::class.java))
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        val intent = Intent(this, MainCalendarActivity::class.java)
+                        intent.putExtra("id", userId)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this, "User ID not found", Toast.LENGTH_SHORT).show()
+                    }
                     true
                 }
+
                 R.id.navigation_profile -> {
                     startActivity(Intent(this, DoctorProfileActivity::class.java))
                     true

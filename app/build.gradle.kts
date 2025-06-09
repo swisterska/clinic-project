@@ -34,6 +34,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+
 }
 
 dependencies {
@@ -67,8 +69,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx:21.0.5")
     implementation ("com.google.android.material:material:1.9.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
-    implementation ("com.google.android.material:material:1.4.0")
     implementation ("com.google.firebase:firebase-storage")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.5")
+
+
 
 
 
