@@ -73,6 +73,8 @@ dependencies {
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.5")
 
 
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+
 
 
 

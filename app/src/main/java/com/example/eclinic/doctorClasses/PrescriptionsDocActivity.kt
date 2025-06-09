@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Layout
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
@@ -56,11 +57,14 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     private fun loadPatients() {
         val doctorId = auth.currentUser?.uid ?: return
 
+        val patientNames = mutableListOf<String>()
+        patientNames.add("Test Patient")
+        patientMap["Test Patient"] = "fObJbIiGW8SxlULhvy5GaqoXXxO2"
+
         db.collection("appointments")
             .whereEqualTo("doctorId", doctorId)
             .get()
             .addOnSuccessListener { result ->
-                val patientNames = mutableListOf<String>()
                 for (doc in result) {
                     val name = doc.getString("patientName") ?: continue
                     val id = doc.getString("patientId") ?: continue
@@ -79,6 +83,23 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
+    private fun getDoctorName(onResult: (String) -> Unit) {
+        val doctorId = auth.currentUser?.uid ?: return
+
+        db.collection("users").document(doctorId)
+            .get()
+            .addOnSuccessListener { doc ->
+                val firstName = doc.getString("firstName") ?: ""
+                val lastName = doc.getString("lastName") ?: ""
+                Log.d("PrescriptionsDoc", "Doctor found: $firstName $lastName")
+                onResult("$firstName $lastName")
+            }
+            .addOnFailureListener {
+                onResult("Unknown Doctor")
+            }
+    }
+
+
     private fun generateAndUploadPrescription() {
         val selectedPatientName = patientSpinner.selectedItem?.toString() ?: return
         val patientId = patientMap[selectedPatientName] ?: return
@@ -96,20 +117,24 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         val fileName = "Prescription_${System.currentTimeMillis()}.pdf"
         val file = File(cacheDir, fileName)
 
-        try {
-            generateStyledPdf(
-                file = file,
-                patientName = selectedPatientName,
-                medication = medication,
-                dosage = dose,
-                units = units,
-                comments = comment
-            )
-            uploadPdfToFirebase(file, doctorId, patientId)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error generating PDF", Toast.LENGTH_SHORT).show()
+        getDoctorName { doctorName ->
+            try {
+                generateStyledPdf(
+                    file = file,
+                    patientName = selectedPatientName,
+                    medication = medication,
+                    dosage = dose,
+                    units = units,
+                    comments = comment,
+                    doctorName = doctorName
+                )
+                uploadPdfToFirebase(file, doctorId, patientId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Error generating PDF", Toast.LENGTH_SHORT).show()
+            }
         }
+
     }
 
     private fun generateStyledPdf(
@@ -118,7 +143,8 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         medication: String,
         dosage: String,
         units: String,
-        comments: String
+        comments: String,
+        doctorName: String
     ) {
         val pageWidth = 595
         val pageHeight = 842
@@ -199,11 +225,11 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         }
         val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         val dateText = "Date: ${sdf.format(Date())}"
-        val clinicText = "Clinic XYZ - 123 Health St. - (555) 123-4567"
 
-        canvas.drawText(clinicText, margin.toFloat(), yPosition, footerPaint)
-        yPosition += 20f
         canvas.drawText(dateText, margin.toFloat(), yPosition, footerPaint)
+        yPosition += 20f
+        canvas.drawText("Prescribed by: Dr. $doctorName", margin.toFloat(), yPosition, footerPaint)
+
 
         document.finishPage(page)
         document.writeTo(FileOutputStream(file))
@@ -238,6 +264,8 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         )
 
         db.collection("prescriptions")
+            .document(patientId)
+            .collection("prescriptionsList")
             .add(prescriptionData)
             .addOnSuccessListener {
                 Toast.makeText(this, "Prescription saved", Toast.LENGTH_SHORT).show()

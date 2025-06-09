@@ -8,10 +8,14 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.app.AlertDialog
+import android.content.Context
+import android.graphics.Bitmap
+import android.widget.ImageView
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.WriterException
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
@@ -51,7 +55,8 @@ class PrescriptionsActivity : AppCompatActivity() {
         recyclerView.visibility = View.GONE
 
         db.collection("prescriptions")
-            .whereEqualTo("patientId", patientId)
+            .document(patientId)
+            .collection("prescriptionsList")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
@@ -95,4 +100,6 @@ class PrescriptionsActivity : AppCompatActivity() {
             Toast.makeText(this, "No PDF viewer installed", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 }
