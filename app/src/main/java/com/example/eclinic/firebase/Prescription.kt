@@ -1,11 +1,8 @@
 package com.example.eclinic.firebase
 
 data class Prescription(
-    var id: String = "",
-    var doctorId: String = "",
-    var patientId: String = "",
-    var medication: List<String> = emptyList(),
-    var dosageInstructions: String = "",
-    var dateIssued: String = "",
-    var prescriptionFileUrl: String = ""
-)
+    val doctorId: String = "",
+    val patientId: String = "",
+    val timestamp: com.google.firebase.Timestamp? = null,
+    val url: String = "",
+    )

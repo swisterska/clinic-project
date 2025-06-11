@@ -14,34 +14,40 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Eclinic"
         tools:targetApi="31">
-
         <activity
-            android:name=".adminClasses.AdminMainPage"
-            android:exported="false"/>
+            android:name=".calendar.AppointmentCalendarActivity"
+            android:exported="false" />
         <activity
-            android:name=".patientClasses.VisitTypeActivity"
-            android:exported="false"/>
-        <activity
-            android:name=".patientClasses.RegisterForAppointmentPatient"
-            android:exported="false"/>
-        <activity
-            android:name=".calendar.WeeklyViewActivity"
+            android:name=".calendar.WeeklyScheduleActivity"
             android:exported="false" />
         <activity
             android:name=".calendar.MainCalendarActivity"
             android:exported="false" />
-        <activity android:name=".doctorClasses.DoctorProfileActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".adminClasses.AdminMainPage"
+            android:exported="false" />
+        <activity
+            android:name=".patientClasses.VisitTypeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".patientClasses.RegisterForAppointmentPatient"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".calendar.WeeklyViewActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".doctorClasses.DoctorProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".doctorClasses.EditDoctorProfileActivity"
-            android:exported="false"/>
-        <activity android:name=".doctorClasses.ChangeDoctorPasswordActivity"
-            android:exported="false"/>
+            android:exported="false" />
+        <activity
+            android:name=".doctorClasses.ChangeDoctorPasswordActivity"
+            android:exported="false" />
         <activity
             android:name=".doctorClasses.CalendarActivity"
             android:exported="false" />
         <activity
-            android:name=".doctorClasses.ConfirmVisitsActivity"
+            android:name=".doctorClasses.PrescriptionsDocActivity"
             android:exported="false" />
         <activity
             android:name=".chat.ChatDoctorActivity"
@@ -60,7 +66,7 @@
             android:exported="false" />
         <activity
             android:name=".patientClasses.EditProfileActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".doctorClasses.MainPageDoctor"
             android:exported="false" />

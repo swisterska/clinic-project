@@ -34,6 +34,8 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+
 }
 
 dependencies {
@@ -63,6 +65,8 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
 
     testImplementation(libs.junit)
@@ -70,4 +74,14 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.google.firebase:firebase-storage")
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.5")
+
+
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+
+
+
+
+
 }

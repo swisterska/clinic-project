@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/weeklyMainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="12dp"
     android:background="@color/ourgrey"
-    tools:context=".calendar.WeeklyViewActivity">
+    tools:context=".calendar.MainCalendarActivity">
 
     <Space
         android:layout_width="wrap_content"
         android:layout_height="20dp"/>
 
     <TextView
-        android:id="@+id/monthlyViewBtn"
+        android:id="@+id/weeklyViewBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Back to Monthly View"
+        android:text="Back to Weekly View"
         android:textColor="@color/ourblue"
         android:clickable="true"
         android:focusable="true"
-        android:onClick="monthlyViewAction"
+        android:onClick="weeklyAction"
         android:padding="2dp"
         android:textStyle="bold"
         android:textSize="15sp"/>
-
+    
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -38,25 +38,28 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="previousWeekAction"
+            android:onClick="previousMonthAction"
             android:src="@drawable/arrowleft"/>
+
 
         <TextView
             android:id="@+id/monthYearTV"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
             android:layout_height="wrap_content"
-            android:text="May 2025"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:paddingBottom="8dp"/>
+            android:text="current month"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/black"/>
 
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:onClick="nextWeekAction"
+            android:onClick="nextMonthAction"
             android:src="@drawable/arrowright"/>
+
+
     </LinearLayout>
 
     <LinearLayout
@@ -127,49 +130,16 @@
             android:textColor="@color/grey"
             android:textAlignment="center"
             android:textSize="16sp"/>
+
+
     </LinearLayout>
 
-    <LinearLayout
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/calendarRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="match_parent"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/calendarRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <LinearLayout
-                android:id="@+id/timeSlotsLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="8dp">
-
-                <TextView
-                    android:id="@+id/selectedSlotsText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="No available slots"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:paddingTop="12dp" />
-
-                <Button
-                    android:id="@+id/addSlotBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Add Time Slot(s)"
-                    android:layout_marginBottom="8dp" />
-            </LinearLayout>
-
-        </ScrollView>
-    </LinearLayout>
 </LinearLayout>
+
+

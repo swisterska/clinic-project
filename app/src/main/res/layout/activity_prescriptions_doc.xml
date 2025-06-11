@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/ourbluebutlighter"
+    tools:context=".doctorClasses.PrescriptionsDocActivity">
+
+    <!-- Patient Selection -->
+    <TextView
+        android:id="@+id/patientLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Write a prescription for your patient"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Spinner
+        android:id="@+id/patientSpinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:prompt="@string/patient_prompt"
+        app:layout_constraintTop_toBottomOf="@id/patientLabel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Medication Name -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/medicationNameLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Medication Name"
+        app:layout_constraintTop_toBottomOf="@id/patientSpinner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/medicationName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Dosage -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dosageLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Dosage"
+        app:layout_constraintTop_toBottomOf="@id/medicationNameLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/dosage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Units -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/unitsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Units"
+        app:layout_constraintTop_toBottomOf="@id/dosageLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/units"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Additional Comments -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/commentsLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Additional Comments"
+        app:layout_constraintTop_toBottomOf="@id/unitsLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:boxBackgroundMode="outline"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusTopEnd="8dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/comments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:minLines="3"
+            android:gravity="top|start" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Submit Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Prescription"
+        app:backgroundTint="@color/ourgrey"
+        android:textColor="@color/ourblue"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="24dp" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
