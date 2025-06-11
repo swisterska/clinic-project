@@ -6,13 +6,15 @@ import android.widget.TextView
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.eclinic.R
-import com.example.eclinic.chat.ChatPatientActivity
+// import com.example.eclinic.chat.ChatPatientActivity // Usunięte
 import com.example.eclinic.logRegClasses.LogRegActivity
 import com.example.eclinic.logRegClasses.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// Importuj nową aktywność z listą lekarzy
+import com.example.eclinic.patientClasses.DoctorsListActivity // <-- Nowa nazwa aktywności
 
 class MainPagePatient : AppCompatActivity() {
 
@@ -33,9 +35,6 @@ class MainPagePatient : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
-        // Pobierz dane użytkownika z Firestore
         val db = FirebaseFirestore.getInstance()
         val uid = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -58,7 +57,8 @@ class MainPagePatient : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatPatientActivity::class.java))
+                    // ZMIANA TUTAJ: Teraz ikona chatu przenosi do nowej aktywności DoctorsListActivity
+                    startActivity(Intent(this, DoctorsListActivity::class.java))
                     true
                 }
                 R.id.nav_prescriptions -> {

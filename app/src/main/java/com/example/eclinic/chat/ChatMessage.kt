@@ -1,3 +1,18 @@
 package com.example.eclinic.chat
 
-data class ChatMessage(val text: String, val isUser: Boolean)
+import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
+
+
+data class ChatMessage(
+    @DocumentId
+    val id: String? = null,
+    val senderId: String = "",
+    val receiverId: String = "",
+    val messageText: String = "",
+    @ServerTimestamp
+    val timestamp: Date? = null
+) {
+    constructor() : this("", "", "", "")
+}

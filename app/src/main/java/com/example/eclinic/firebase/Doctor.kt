@@ -8,7 +8,9 @@ data class Doctor(
     val title: String = "",
     val workplace: String = "",
     val pwz: String = ""
-)
+) {
+
+}
 
 
 

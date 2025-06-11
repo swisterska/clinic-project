@@ -44,7 +44,7 @@
             android:name=".doctorClasses.ConfirmVisitsActivity"
             android:exported="false" />
         <activity
-            android:name=".doctorClasses.ChatDocActivity"
+            android:name=".chat.ChatDoctorActivity"
             android:exported="false" />
         <activity
             android:name=".patientClasses.ProfileActivity"
@@ -75,6 +75,12 @@
             android:exported="false" />
         <activity
             android:name=".logRegClasses.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".patientClasses.DoctorsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".patientClasses.PatientsListActivity"
             android:exported="false" />
         <activity
             android:name=".logRegClasses.LogRegActivity"

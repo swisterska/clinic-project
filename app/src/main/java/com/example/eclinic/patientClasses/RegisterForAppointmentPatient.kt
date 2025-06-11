@@ -11,10 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
-import com.example.eclinic.firebase.Doctor
+import com.example.eclinic.doctorClasses.Doctor
 import com.example.eclinic.firebase.Role
 import com.example.eclinic.firebase.Specialization
-import com.example.eclinic.firebase.User
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterForAppointmentPatient : AppCompatActivity() {
@@ -26,7 +25,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
     private lateinit var noResultsText: TextView
 
     private val doctorList = mutableListOf<Doctor>()
-    private var fullDoctorList = listOf<Doctor>() // Backup for search
+    private var fullDoctorList = listOf<Doctor>()
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +42,9 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
             doctorList,
             onDoctorClick = { selectedDoctor ->
                 val intent = Intent(this, VisitTypeActivity::class.java)
-                intent.putExtra("specialization", selectedDoctor.description)
-                intent.putExtra("doctorName", selectedDoctor.name)
+                intent.putExtra("specialization", selectedDoctor.specialization)
+                intent.putExtra("doctorName", "${selectedDoctor.firstName} ${selectedDoctor.lastName}")
+                // intent.putExtra("doctorId", selectedDoctor.uid)
                 startActivity(intent)
             },
             onInfoClick = { selectedDoctor ->
@@ -59,7 +59,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
     }
 
     private fun setupSpecializationFilter() {
-        val specializations = listOf("All") + Specialization.values().map { it.displayName }
+        val specializations = listOf("All") + Specialization.entries.map { it.displayName }
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, specializations)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         specializationSpinner.adapter = adapter
@@ -81,9 +81,9 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val query = s.toString().trim().lowercase()
                 val filtered = fullDoctorList.filter { doctor ->
-                    val name = doctor.name.lowercase()
-                    val parts = name.split(" ")
-                    if (name.startsWith(query) || parts.any { it.startsWith(query) }) return@filter true
+                    val fullName = "${doctor.firstName} ${doctor.lastName}".lowercase()
+                    val parts = fullName.split(" ")
+                    if (fullName.startsWith(query) || parts.any { it.startsWith(query) }) return@filter true
                     parts.any { typos(it, query) <= 2 }
                 }
 
@@ -105,26 +105,12 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
             .addOnSuccessListener { documents ->
                 doctorList.clear()
                 for (doc in documents) {
-                    val firstName = doc.getString("firstName") ?: ""
-                    val lastName = doc.getString("lastName") ?: ""
-                    val specialization = doc.getString("specialization") ?: ""
-                    val bio = doc.getString("bio") ?: ""
-                    val title = doc.getString("title") ?: ""
-                    val workplace = doc.getString("workplace") ?: ""
-                    val pwz = doc.getString("pwz") ?: ""
-                    val profilePicUrl = doc.getString("profilePictureUrl") ?: ""
-
-                    doctorList.add(
-                        Doctor(
-                            name = "$firstName $lastName",
-                            bio = bio,
-                            description = specialization,
-                            profilePicUrl = profilePicUrl,
-                            title = title,
-                            workplace = workplace,
-                            pwz = pwz
-                        )
-                    )
+                    val doctor = doc.toObject(Doctor::class.java)
+                    doctor?.let {
+                        if (it.role == Role.DOCTOR.name) {
+                            doctorList.add(it)
+                        }
+                    }
                 }
                 fullDoctorList = doctorList.toList()
                 doctorAdapter.notifyDataSetChanged()
@@ -137,12 +123,12 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
 
     private fun showDoctorInfoDialog(doctor: Doctor) {
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
-        builder.setTitle(doctor.name)
+        builder.setTitle("${doctor.firstName} ${doctor.lastName}")
         builder.setMessage(
             "Title: ${doctor.title.ifEmpty { "N/A" }}\n" +
-                    "Specialization: ${doctor.description.ifEmpty { "N/A" }}\n" +
+                    "Specialization: ${doctor.specialization.ifEmpty { "N/A" }}\n" +
                     "Workplace: ${doctor.workplace.ifEmpty { "N/A" }}\n" +
-                    "PWZ Number: ${doctor.pwz.ifEmpty { "N/A" }}\n\n" +
+                    "PWZ Number: ${doctor.pwzNumber.ifEmpty { "N/A" }}\n\n" +
                     "Description:\n${doctor.bio.ifEmpty { "No description available." }}"
         )
         builder.setPositiveButton("Close", null)

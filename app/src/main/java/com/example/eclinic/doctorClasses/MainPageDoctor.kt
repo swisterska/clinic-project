@@ -7,6 +7,8 @@ import android.content.Intent
 import android.widget.TextView
 import com.example.eclinic.R
 import com.example.eclinic.calendar.MainCalendarActivity
+import com.example.eclinic.chat.ChatDoctorActivity
+import com.example.eclinic.patientClasses.PatientsListActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -50,7 +52,7 @@ class MainPageDoctor : AppCompatActivity() {
         bottomNavDoc.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_chat -> {
-                    startActivity(Intent(this, ChatDocActivity::class.java))
+                    startActivity(Intent(this, PatientsListActivity::class.java))
                     true
                 }
                 R.id.navigation_visits_confirm -> {
