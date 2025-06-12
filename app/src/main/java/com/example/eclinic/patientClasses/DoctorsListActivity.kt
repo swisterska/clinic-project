@@ -121,7 +121,9 @@ class DoctorsListActivity : AppCompatActivity() {
     }
 
     private fun fetchDoctorsFromFirestore(specializationFilter: String?) {
-        var query = db.collection("users").whereEqualTo("role", Role.DOCTOR.name)
+        var query = db.collection("users")
+            .whereEqualTo("role", Role.DOCTOR.name)
+            .whereEqualTo("verified", true)
 
         if (specializationFilter != null) {
             query = query.whereEqualTo("specialization", specializationFilter)

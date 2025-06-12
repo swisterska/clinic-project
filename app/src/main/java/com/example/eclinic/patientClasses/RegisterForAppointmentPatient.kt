@@ -96,7 +96,10 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
     }
 
     private fun fetchDoctorsFromFirestore(specialization: String?) {
-        var query = db.collection("users").whereEqualTo("role", Role.DOCTOR.name)
+        var query = db.collection("users")
+            .whereEqualTo("role", Role.DOCTOR.name)
+            .whereEqualTo("verified", true)
+
         if (specialization != null) {
             query = query.whereEqualTo("specialization", specialization)
         }

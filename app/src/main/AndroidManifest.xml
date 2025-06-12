@@ -15,7 +15,13 @@
         android:theme="@style/Theme.Eclinic"
         tools:targetApi="31">
         <activity
-            android:name=".calendar.AppointmentCalendarActivity"
+            android:name=".adminClasses.AdminCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adminClasses.AdminDoctorsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adminClasses.AdminPatientsListActivity"
             android:exported="false" />
         <activity
             android:name=".calendar.WeeklyScheduleActivity"
