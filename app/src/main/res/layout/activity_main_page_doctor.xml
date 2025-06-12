@@ -1,26 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/ourblue">
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation_doctor"
-        android:paddingBottom="-5dp"/>
-
     <TextView
         android:id="@+id/tvWelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome, User"
-        android:textSize="22sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="60dp"
         android:layout_centerHorizontal="true"/>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvWelcomeMessage"
+        android:layout_above="@id/bottom_navigation_doctor"
+        android:paddingBottom="-5dp"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_doctor"

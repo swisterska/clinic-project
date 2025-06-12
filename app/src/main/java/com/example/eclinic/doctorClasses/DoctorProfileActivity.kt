@@ -29,7 +29,6 @@ class DoctorProfileActivity : AppCompatActivity() {
     private lateinit var bioTextView: TextView
     private lateinit var editProfileButton: Button
     private lateinit var logoutButton: Button
-    private lateinit var chatWithPatientsButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +48,6 @@ class DoctorProfileActivity : AppCompatActivity() {
         bioTextView = findViewById(R.id.doctorBio)
         editProfileButton = findViewById(R.id.editDoctorProfileButton)
         logoutButton = findViewById(R.id.logoutButton)
-        chatWithPatientsButton = findViewById(R.id.chat_button)
 
         val userId = auth.currentUser?.uid
 
@@ -75,23 +73,20 @@ class DoctorProfileActivity : AppCompatActivity() {
                         workplaceTextView.text = document.getString("workplace") ?: ""
                         bioTextView.text = document.getString("bio") ?: ""
 
-                        // Optional: Load profile picture if available in Firestore
-                        // val profilePicUrl = document.getString("profilePictureUrl")
-                        // if (!profilePicUrl.isNullOrEmpty()) {
-                        //     Glide.with(this).load(profilePicUrl).into(profileImageView)
-                        // } else {
-                        //     profileImageView.setImageResource(R.drawable.default_image)
-                        // }
                     } else {
-                        Log.d("Firestore", "No doctor document found")
-                        Toast.makeText(this, "Profile data not found", Toast.LENGTH_SHORT).show()
+                        Log.d("Firestore", "No doctor document found for userId: $userId")
+                        Toast.makeText(this, "Profile data not found.", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener { exception ->
                     Log.d("Firestore", "Error fetching doctor data: ", exception)
                     Toast.makeText(this, "An error occurred while fetching profile data.", Toast.LENGTH_SHORT).show()
                 }
+        } else {
+            Log.e("Auth", "User ID is null. User might not be logged in.")
+            Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_LONG).show()
         }
+
         editProfileButton.setOnClickListener {
             val intent = Intent(this, EditDoctorProfileActivity::class.java)
             startActivity(intent)
@@ -103,11 +98,6 @@ class DoctorProfileActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
-        }
-
-        chatWithPatientsButton.setOnClickListener {
-            val intent = Intent(this, PatientsListActivity::class.java)
-            startActivity(intent)
         }
     }
 }

@@ -8,12 +8,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
 import com.example.eclinic.firebase.Visit
 
-class VisitAdapter(private val visits: List<Visit>) :
-    RecyclerView.Adapter<VisitAdapter.VisitViewHolder>() {
+class VisitAdapter(
+    private val visits: List<Visit>,
+    private val onVisitClick: (Visit) -> Unit // ✅ Click callback
+) : RecyclerView.Adapter<VisitAdapter.VisitViewHolder>() {
 
-    class VisitViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class VisitViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val visitName: TextView = view.findViewById(R.id.visit_name)
         val visitPrice: TextView = view.findViewById(R.id.visit_price)
+
+        init {
+            view.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onVisitClick(visits[position])
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VisitViewHolder {
@@ -30,3 +41,4 @@ class VisitAdapter(private val visits: List<Visit>) :
 
     override fun getItemCount(): Int = visits.size
 }
+

@@ -15,9 +15,23 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:gravity="center"
-        android:text="We"
-        android:textSize="30dp"
-        android:textColor="@color/black"/>
+        android:text="Welcome, User"
+        android:textSize="28dp"
+        android:layout_marginTop="60dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/upcomingVisitTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/petNameTextView"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Fetching upcoming visit..."
+        android:textSize="16sp"
+        android:textColor="@color/black" />
+
 
     <ImageButton
         android:id="@+id/ScheduleAnApointmentBtn"

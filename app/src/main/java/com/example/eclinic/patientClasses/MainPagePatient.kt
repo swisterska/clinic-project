@@ -27,6 +27,8 @@ class MainPagePatient : AppCompatActivity() {
         setContentView(R.layout.activity_main_page_patient)
 
         welcomeText = findViewById(R.id.petNameTextView)
+        val upcomingVisitTextView = findViewById<TextView>(R.id.upcomingVisitTextView)
+
         bottomNav = findViewById(R.id.bottom_navigation)
         scheduleAnApointment = findViewById(R.id.ScheduleAnApointmentBtn)
 
@@ -47,9 +49,10 @@ class MainPagePatient : AppCompatActivity() {
                         welcomeText.text = "Welcome, $firstName"
                     }
                 }
-                .addOnFailureListener {
-                    welcomeText.text = "Welcome, User"
-                }
+
+            fetchUpcomingVisit(uid, upcomingVisitTextView)
+
+
         } else {
             welcomeText.text = "Welcome, Guest"
         }
@@ -57,7 +60,6 @@ class MainPagePatient : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_chat -> {
-                    // ZMIANA TUTAJ: Teraz ikona chatu przenosi do nowej aktywności DoctorsListActivity
                     startActivity(Intent(this, DoctorsListActivity::class.java))
                     true
                 }
@@ -77,4 +79,35 @@ class MainPagePatient : AppCompatActivity() {
             }
         }
     }
+
+    private fun fetchUpcomingVisit(patientId: String, upcomingVisitTextView: TextView) {
+        val db = FirebaseFirestore.getInstance()
+
+        val now = System.currentTimeMillis()
+        val appointmentsRef = db.collectionGroup("confirmedAppointments")
+
+        appointmentsRef
+            .whereEqualTo("patientId", patientId)
+            .whereGreaterThan("timestamp", now)
+            .orderBy("timestamp")
+            .limit(1)
+            .get()
+            .addOnSuccessListener { result ->
+                if (!result.isEmpty) {
+                    val doc = result.documents.first()
+                    val date = doc.getString("date") ?: "Unknown"
+                    val hour = doc.getString("hour") ?: "Unknown"
+                    val type = doc.getString("typeOfTheVisit") ?: "Visit"
+
+
+                    upcomingVisitTextView.text = "Next Visit: $type on $date at $hour"
+                } else {
+                    upcomingVisitTextView.text = "You have no upcoming visits"
+                }
+            }
+            .addOnFailureListener {
+                upcomingVisitTextView.text = "Failed to load visit info"
+            }
+    }
+
 }
