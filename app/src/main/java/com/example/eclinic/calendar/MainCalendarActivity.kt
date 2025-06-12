@@ -40,7 +40,7 @@ class MainCalendarActivity : AppCompatActivity() {
 
             val selectedDateMillis = calendar.timeInMillis
 
-            val intent = Intent(this, WeeklyScheduleActivity::class.java)
+            val intent = Intent(this, WeeklyScheduleActivityDoctor::class.java)
             intent.putExtra("selectedDate", selectedDateMillis)
             intent.putExtra("id", doctorId)
             startActivity(intent)

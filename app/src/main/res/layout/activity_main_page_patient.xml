@@ -19,6 +19,18 @@
         android:textSize="30dp"
         android:textColor="@color/black"/>
 
+    <TextView
+        android:id="@+id/upcomingVisitTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/petNameTextView"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Fetching upcoming visit..."
+        android:textSize="16sp"
+        android:textColor="@color/black" />
+
+
     <ImageButton
         android:id="@+id/ScheduleAnApointmentBtn"
         android:layout_width="wrap_content"

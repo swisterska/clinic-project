@@ -44,7 +44,7 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
                 val intent = Intent(this, VisitTypeActivity::class.java)
                 intent.putExtra("specialization", selectedDoctor.specialization)
                 intent.putExtra("doctorName", "${selectedDoctor.firstName} ${selectedDoctor.lastName}")
-                // intent.putExtra("doctorId", selectedDoctor.uid)
+                intent.putExtra("id", selectedDoctor.uid)
                 startActivity(intent)
             },
             onInfoClick = { selectedDoctor ->

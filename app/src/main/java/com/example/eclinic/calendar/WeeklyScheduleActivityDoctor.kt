@@ -15,7 +15,7 @@ import java.util.*
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class WeeklyScheduleActivity : AppCompatActivity(), TimeSlotDialog.TimeSlotListener {
+class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlotListener {
 
     private lateinit var dateTitle: TextView
     private lateinit var btnAddSlots: Button
@@ -67,7 +67,10 @@ class WeeklyScheduleActivity : AppCompatActivity(), TimeSlotDialog.TimeSlotListe
     }
 
     private fun updateTimeSlots() {
-        val adapter = TimeSlotDisplayAdapter(selectedSlots)
+        val adapter = TimeSlotDisplayAdapter(
+            selectedSlots,
+            bookedSlots = bookedSlots // pass booked slots
+        )
         recyclerView.adapter = adapter
     }
 
@@ -93,20 +96,31 @@ class WeeklyScheduleActivity : AppCompatActivity(), TimeSlotDialog.TimeSlotListe
             }
     }
 
+    private var bookedSlots: List<String> = listOf()
+
     private fun loadSlotsFromFirebase() {
         val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
 
-        db.collection("appointments")
-            .document(doctorId)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.contains(dateKey)) {
-                    val slots = document[dateKey] as? List<*> ?: listOf<String>()
-                    selectedSlots = slots.filterIsInstance<String>()
+        db.collection("appointments").document(doctorId).get().addOnSuccessListener { doc ->
+            val allSlots = (doc[dateKey] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+            selectedSlots = allSlots
+
+            // Also get booked slots
+            db.collection("confirmedAppointments")
+                .whereEqualTo("doctorId", doctorId)
+                .whereEqualTo("date", dateKey)
+                .get()
+                .addOnSuccessListener { confirmedDocs ->
+                    bookedSlots = confirmedDocs.mapNotNull { it.getString("hour") }
                     updateTimeSlots()
                 }
-            }
+        }
     }
+
+
+
+
+
 
 
 }
