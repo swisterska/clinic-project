@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_manage_doctors"
+        android:title="Doctors"
+        android:icon="@drawable/default_image" />
+    <item
+        android:id="@+id/menu_manage_schedules"
+        android:title="Schedules"
+        android:icon="@drawable/calendar" />
+    <item
+        android:id="@+id/menu_manage_patients"
+        android:title="Patients"
+        android:icon="@drawable/default_patient" />
+</menu>

@@ -18,7 +18,13 @@
             android:name=".calendar.WeeklyScheduleActivityPatient"
             android:exported="false" />
         <activity
-            android:name=".calendar.AppointmentCalendarActivity"
+            android:name=".adminClasses.AdminCalendarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adminClasses.AdminDoctorsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".adminClasses.AdminPatientsListActivity"
             android:exported="false" />
         <activity
             android:name=".calendar.WeeklyScheduleActivityDoctor"
