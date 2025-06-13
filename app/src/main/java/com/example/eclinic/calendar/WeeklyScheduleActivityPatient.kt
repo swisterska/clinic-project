@@ -104,7 +104,7 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
         val visitName = intent.getStringExtra("visitName") ?: "Unknown"
 
         val appointment = mapOf(
-            "patientId" to patientId,
+            "id" to patientId,
             "doctorId" to doctorId,
             "date" to SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time),
             "hour" to slot,

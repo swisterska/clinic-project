@@ -45,10 +45,8 @@ class VisitTypeActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.visit_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = VisitAdapter(visits) { selectedVisit ->
-            val intent = Intent(this, WeeklyScheduleActivityPatient::class.java)
-
+            val intent = Intent(this, MainCalendarActivity::class.java)
             intent.putExtra("id", doctorId)
-            intent.putExtra("selectedDate", Calendar.getInstance().timeInMillis)
             intent.putExtra("visitName", selectedVisit.name)
             startActivity(intent)
         }

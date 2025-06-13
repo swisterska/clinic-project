@@ -2,6 +2,7 @@ package com.example.eclinic.patientClasses
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -83,12 +84,9 @@ class MainPagePatient : AppCompatActivity() {
     private fun fetchUpcomingVisit(patientId: String, upcomingVisitTextView: TextView) {
         val db = FirebaseFirestore.getInstance()
 
-        val now = System.currentTimeMillis()
-        val appointmentsRef = db.collectionGroup("confirmedAppointments")
-
-        appointmentsRef
-            .whereEqualTo("patientId", patientId)
-            .whereGreaterThan("timestamp", now)
+        db.collection("confirmedAppointments")
+            .whereEqualTo("id", patientId)
+            .whereGreaterThan("timestamp", System.currentTimeMillis())
             .orderBy("timestamp")
             .limit(1)
             .get()
@@ -99,7 +97,6 @@ class MainPagePatient : AppCompatActivity() {
                     val hour = doc.getString("hour") ?: "Unknown"
                     val type = doc.getString("typeOfTheVisit") ?: "Visit"
 
-
                     upcomingVisitTextView.text = "Next Visit: $type on $date at $hour"
                 } else {
                     upcomingVisitTextView.text = "You have no upcoming visits"
@@ -109,5 +106,4 @@ class MainPagePatient : AppCompatActivity() {
                 upcomingVisitTextView.text = "Failed to load visit info"
             }
     }
-
 }

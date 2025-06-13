@@ -40,12 +40,22 @@ class MainCalendarActivity : AppCompatActivity() {
 
             val selectedDateMillis = calendar.timeInMillis
 
-            val intent = Intent(this, WeeklyScheduleActivityDoctor::class.java)
-            intent.putExtra("selectedDate", selectedDateMillis)
-            intent.putExtra("id", doctorId)
-            startActivity(intent)
+            val visitName = intent.getStringExtra("visitName")
+
+            val nextIntent = if (visitName != null) {
+                Intent(this, WeeklyScheduleActivityPatient::class.java).apply {
+                    putExtra("visitName", visitName)
+                }
+            } else {
+                Intent(this, WeeklyScheduleActivityDoctor::class.java)
+            }
+
+            nextIntent.putExtra("selectedDate", selectedDateMillis)
+            nextIntent.putExtra("id", doctorId)
+            startActivity(nextIntent)
+
         }
-        welcomeText = findViewById(R.id.tvWelcomeMessage)
+
 
 
 
