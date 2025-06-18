@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F7F7F7">
+    android:background="@color/ourbluebutlighter">
 
     <TextView
         android:id="@+id/visit_title"
@@ -16,6 +16,17 @@
         android:textStyle="bold"
         android:textColor="#000"
         android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/no_visits_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No available visit types."
+        android:textSize="16sp"
+        android:textColor="#777"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/visit_recycler_view"

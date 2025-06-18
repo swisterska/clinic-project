@@ -9,7 +9,7 @@ import com.example.eclinic.R
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class VisitItem(val date: Date, val hour: String, val type: String, val doctorName: String, val documentId: String)
+data class VisitItem(val date: Date, val hour: String, val type: String, val doctorName: String, val documentId: String, val price: String)
 
 class UpcomingVisitAdapter(private val visits: List<VisitItem>) :
     RecyclerView.Adapter<UpcomingVisitAdapter.VisitViewHolder>() {

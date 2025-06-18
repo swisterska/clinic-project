@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:text="◀"
             android:textSize="20dp"
             android:background="@android:color/transparent"
-            android:textColor="@color/purple_500" />
+            android:textColor="@color/ourblue" />
 
         <TextView
             android:id="@+id/dateTitle"
@@ -43,17 +43,25 @@
             android:text="▶"
             android:textSize="20dp"
             android:background="@android:color/transparent"
-            android:textColor="@color/purple_500" />
+            android:textColor="@color/ourblue" />
 
     </LinearLayout>
 
     <!-- Add Time Slot Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddSlots"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add Time Slot(s)"
-        android:layout_marginTop="8dp" />
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp"
+        app:cornerRadius="12dp"
+        app:iconPadding="8dp"
+        app:iconTint="@android:color/white"
+        app:backgroundTint="@color/ourblue" />
+
 
     <!-- RecyclerView for displaying time slots -->
     <androidx.recyclerview.widget.RecyclerView
@@ -64,12 +72,20 @@
         android:paddingTop="16dp" />
 
     <!-- Confirm Visit Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnConfirmVisit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Confirm Visit"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp"
         android:visibility="gone"
-        android:layout_marginTop="16dp" />
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/ourblue"
+        app:iconPadding="8dp"
+        app:iconTint="@android:color/white" />
+
 
 </LinearLayout>

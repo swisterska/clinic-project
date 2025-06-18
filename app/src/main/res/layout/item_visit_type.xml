@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:strokeColor="@color/ourbluebutlighter"
+    app:strokeWidth="1dp"
+    android:foreground="?selectableItemBackground">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvVisitName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="EKG"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnEdit" />
+
+        <TextView
+            android:id="@+id/tvVisitPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="150 PLN"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@id/tvVisitName"
+            app:layout_constraintTop_toBottomOf="@id/tvVisitName"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btnEdit"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_edit"
+            android:contentDescription="Edit"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/ourgrey"/>
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="Delete"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/nicered" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

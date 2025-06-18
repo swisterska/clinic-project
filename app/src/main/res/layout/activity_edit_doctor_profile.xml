@@ -269,6 +269,16 @@
             android:textSize="18sp" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/EditYourServicesButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16sp"
+            android:background="@color/ourblue"
+            android:text="Edit Your Services"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/changePasswordButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

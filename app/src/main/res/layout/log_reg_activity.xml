@@ -50,17 +50,4 @@
             android:focusable="true"/>
     </LinearLayout>
 
-    <!-- Doctor Button -->
-    <Button
-        android:id="@+id/Gotodoctor"
-        android:layout_width="121dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="#BFD3DA"
-        android:text="Calendar"
-        android:textColor="@color/ourblue"
-        android:textStyle="bold"
-        android:translationY="190dp"/>
-
-
 </LinearLayout>

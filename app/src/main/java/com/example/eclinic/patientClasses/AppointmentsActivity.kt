@@ -68,6 +68,7 @@ class AppointmentsActivity : AppCompatActivity() {
                     val dateStr = doc.getString("date")
                     val hour = doc.getString("hour") ?: continue
                     val type = doc.getString("typeOfTheVisit") ?: "Visit"
+                    val price = doc.getString("price") ?: "Price"
                     val doctorId = doc.getString("doctorId") ?: continue
 
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
@@ -78,7 +79,7 @@ class AppointmentsActivity : AppCompatActivity() {
                                 val firstName = doctorDoc.getString("firstName") ?: ""
                                 val lastName = doctorDoc.getString("lastName") ?: ""
                                 val doctorName = "Dr. $firstName $lastName".trim()
-                                visits.add(VisitItem(parsedDate, hour, type, doctorName, docId))
+                                visits.add(VisitItem(parsedDate, hour, type, doctorName, docId, price))
                             }
                         tasks.add(task)
                     }

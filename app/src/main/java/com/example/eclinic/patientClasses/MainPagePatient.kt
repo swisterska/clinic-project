@@ -142,6 +142,7 @@ class MainPagePatient : AppCompatActivity() {
                     val hour = doc.getString("hour") ?: continue
                     val type = doc.getString("typeOfTheVisit") ?: "Visit"
                     val doctorId = doc.getString("doctorId") ?: continue
+                    val price = doc.getString("price") ?: "Price"
 
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
 
@@ -152,7 +153,7 @@ class MainPagePatient : AppCompatActivity() {
                                 val lastName = doctorDoc.getString("lastName") ?: ""
                                 val doctorName = "Dr. $firstName $lastName".trim()
 
-                                visits.add(VisitItem(parsedDate, hour, type, doctorName, doc.id))
+                                visits.add(VisitItem(parsedDate, hour, type, doctorName, doc.id, price))
                             }
                         tasks.add(task)
                     }

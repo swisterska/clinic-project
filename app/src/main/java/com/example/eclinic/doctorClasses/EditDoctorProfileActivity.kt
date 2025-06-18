@@ -27,6 +27,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
     private lateinit var workplaceEditText: EditText
     private lateinit var bioEditText: EditText
     private lateinit var saveButton: Button
+    private lateinit var editOfferButton: Button
     private lateinit var changePasswordButton: Button
 
     @SuppressLint("MissingInflatedId")
@@ -47,6 +48,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
         workplaceEditText = findViewById(R.id.editDoctorWorkplace)
         bioEditText = findViewById(R.id.editDoctorBio)
         saveButton = findViewById(R.id.saveDoctorProfileButton)
+        editOfferButton = findViewById(R.id.EditYourServicesButton)
         changePasswordButton = findViewById(R.id.changePasswordButton)
 
         changePasswordButton.setOnClickListener {
@@ -98,5 +100,11 @@ class EditDoctorProfileActivity : AppCompatActivity() {
                     }
             }
         }
+        editOfferButton.setOnClickListener {
+            val intent = Intent(this, DoctorVisitTypesActivity::class.java)
+            intent.putExtra("userId", userId)
+            startActivity(intent)
+        }
+
     }
 }

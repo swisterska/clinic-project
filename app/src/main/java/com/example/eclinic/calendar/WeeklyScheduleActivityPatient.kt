@@ -1,5 +1,6 @@
 package com.example.eclinic.calendar
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.patientClasses.MainPagePatient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -116,7 +118,7 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
     private fun bookAppointment(slot: String) {
         val patientId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val visitName = intent.getStringExtra("visitName") ?: "Unknown"
-        val timestamp = System.currentTimeMillis()
+        val visitPrice = intent.getStringExtra("visitPrice") ?: "Unknown"
 
         val appointment = mapOf(
             "id" to patientId,
@@ -124,14 +126,17 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
             "date" to SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time),
             "hour" to slot,
             "timestamp" to Timestamp.now(),  // ← Correct format
-            "typeOfTheVisit" to visitName
+            "typeOfTheVisit" to visitName,
+            "price" to visitPrice
         )
 
         db.collection("confirmedAppointments")
             .add(appointment)
             .addOnSuccessListener {
                 Toast.makeText(this, "Appointment booked!", Toast.LENGTH_SHORT).show()
-                finish()
+                val intent = Intent(this, MainPagePatient::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Booking failed.", Toast.LENGTH_SHORT).show()

@@ -2,43 +2,66 @@ package com.example.eclinic.patientClasses
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
 import com.example.eclinic.calendar.MainCalendarActivity
-import com.example.eclinic.calendar.WeeklyScheduleActivityPatient
-import com.example.eclinic.firebase.Specialization
 import com.example.eclinic.firebase.Visit
-import com.example.eclinic.firebase.visitsBySpecialization
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Calendar
 
 class VisitTypeActivity : AppCompatActivity() {
 
     private lateinit var visitTypesTextView: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var noVisitsTextView: TextView
     private val db = FirebaseFirestore.getInstance()
 
-    // ✅ Move doctorId here
     private lateinit var doctorId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_visit_type)
 
-        val specializationName = intent.getStringExtra("specialization") ?: return
-        val doctorName = intent.getStringExtra("doctorName")
-        doctorId = intent.getStringExtra("id") ?: return
+        visitTypesTextView = findViewById(R.id.visit_title)
+        noVisitsTextView = findViewById(R.id.no_visits_text)
 
-        val specialization = Specialization.fromString(specializationName)
-
-        if (specialization != null) {
-            val visits = visitsBySpecialization[specialization]
-            if (visits != null) {
-                setupRecyclerView(visits)
-            }
+        doctorId = intent.getStringExtra("id") ?: run {
+            Toast.makeText(this, "Brak ID lekarza", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        fetchVisitTypesFromFirestore()
+    }
+
+    private fun fetchVisitTypesFromFirestore() {
+        db.collection("visitTypes").document(doctorId)
+            .get()
+            .addOnSuccessListener { document ->
+                val visitList = mutableListOf<Visit>()
+                val data = document.data
+
+                if (data != null && data.isNotEmpty()) {
+                    for ((name, price) in data) {
+                        visitList.add(Visit(name, price.toString()))
+                    }
+
+                    setupRecyclerView(visitList)
+                    noVisitsTextView.visibility = TextView.GONE
+                } else {
+                    noVisitsTextView.visibility = TextView.VISIBLE
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to load visit types: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                noVisitsTextView.text = "Failed to load."
+                noVisitsTextView.visibility = View.VISIBLE
+            }
     }
 
     private fun setupRecyclerView(visits: List<Visit>) {
@@ -48,6 +71,7 @@ class VisitTypeActivity : AppCompatActivity() {
             val intent = Intent(this, MainCalendarActivity::class.java)
             intent.putExtra("id", doctorId)
             intent.putExtra("visitName", selectedVisit.name)
+            intent.putExtra("visitPrice", selectedVisit.price)
             startActivity(intent)
         }
     }

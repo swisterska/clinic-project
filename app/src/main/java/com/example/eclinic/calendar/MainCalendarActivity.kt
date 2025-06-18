@@ -18,6 +18,7 @@ class MainCalendarActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private var doctorId: String? = null
     private var visitName: String? = null
+    private var visitPrice: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +29,7 @@ class MainCalendarActivity : AppCompatActivity() {
 
         doctorId = intent.getStringExtra("id")
         visitName = intent.getStringExtra("visitName")
+        visitPrice = intent.getStringExtra("visitPrice")
 
         if (doctorId == null) {
             Toast.makeText(this, "Missing doctor ID", Toast.LENGTH_SHORT).show()
@@ -52,6 +54,7 @@ class MainCalendarActivity : AppCompatActivity() {
             val nextIntent = if (visitName != null) {
                 Intent(this, WeeklyScheduleActivityPatient::class.java).apply {
                     putExtra("visitName", visitName)
+                    putExtra("visitPrice", visitPrice)
                 }
             } else {
                 Intent(this, WeeklyScheduleActivityDoctor::class.java)

@@ -21,6 +21,8 @@ class AppointmentsAdapter(
         val visitDate: TextView = itemView.findViewById(R.id.textVisitDate)
         val visitTime: TextView = itemView.findViewById(R.id.textVisitTime)
         val cancelBtn: Button = itemView.findViewById(R.id.cancelAppointmentBtn)
+        val visitPrice: TextView = itemView.findViewById(R.id.textVisitPrice)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,6 +39,8 @@ class AppointmentsAdapter(
         holder.doctorName.text = appointment.doctorName
         holder.visitDate.text = SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault()).format(appointment.date)
         holder.visitTime.text = appointment.hour
+        holder.visitPrice.text = appointment.price
+
 
         holder.cancelBtn.setOnClickListener {
             onCancelClick(appointment)
