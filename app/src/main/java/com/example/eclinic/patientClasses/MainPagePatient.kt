@@ -30,6 +30,8 @@ class MainPagePatient : AppCompatActivity() {
     private lateinit var bottomNav: BottomNavigationView
     private lateinit var scheduleAnApointment: ImageButton
     private lateinit var visitsRecyclerView: RecyclerView
+    private lateinit var noVisitsTextView: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +43,8 @@ class MainPagePatient : AppCompatActivity() {
 
         // Zamiana 8dp na px:
         val spacingInPixels = (8 * resources.displayMetrics.density).toInt()
+
+        noVisitsTextView = findViewById(R.id.noVisitsTextView)
 
         visitsRecyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
@@ -159,8 +163,18 @@ class MainPagePatient : AppCompatActivity() {
                         visits.sortWith(compareBy<VisitItem> { it.date }.thenBy { visit ->
                             timeFormat.parse(visit.hour)?.time ?: 0
                         })
+
                         visitsRecyclerView.adapter = UpcomingVisitAdapter(visits)
+
+                        if (visits.isEmpty()) {
+                            noVisitsTextView.visibility = android.view.View.VISIBLE
+                            visitsRecyclerView.visibility = android.view.View.GONE
+                        } else {
+                            noVisitsTextView.visibility = android.view.View.GONE
+                            visitsRecyclerView.visibility = android.view.View.VISIBLE
+                        }
                     }
+
             }
     }
 

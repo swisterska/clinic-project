@@ -25,22 +25,36 @@
         android:id="@+id/upcomingVisitsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Upcoming Visits"
-        android:textSize="20sp"
+        android:text="Your Upcoming Visits:"
+        android:textSize="18sp"
+        android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
-        android:layout_below="@id/petNameTextView" />
+        android:layout_below="@id/petNameTextView"
+        android:layout_centerHorizontal="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/upcomingVisitsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/upcomingVisitsTitle"        android:layout_marginTop="16dp"
+        android:layout_below="@id/upcomingVisitsTitle"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:layout_above="@id/ScheduleAnApointmentBtn"
         />
+
+    <TextView
+        android:id="@+id/noVisitsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No upcoming visits this week"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_below="@id/upcomingVisitsTitle"
+        android:layout_marginTop="32dp"
+        android:visibility="gone"/>
 
 
 
