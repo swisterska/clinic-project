@@ -10,9 +10,10 @@ import com.example.eclinic.R
 
 class TimeSlotDisplayAdapter(
     private val selectedSlots: List<String>,
-    private val selectedSlot: String? = null, // Used by Patient for selection
-    private val onSlotSelected: ((String) -> Unit)? = null, // Click callback (for Patient)
-    private val bookedSlots: List<String> = emptyList() // Used by Doctor to mark booked slots
+    private val selectedSlot: String? = null, // Patient selection
+    private val onSlotSelected: ((String) -> Unit)? = null, // Patient click callback
+    private val bookedSlots: List<String> = emptyList(), // Booked slots (doctor view)
+    private val onBookedSlotClick: ((String) -> Unit)? = null // Doctor clicks red slot
 ) : RecyclerView.Adapter<TimeSlotDisplayAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -30,11 +31,13 @@ class TimeSlotDisplayAdapter(
         holder.textSlot.text = timeSlot
 
         if (bookedSlots.contains(timeSlot)) {
-            // For Doctor: Booked slot is red and not clickable
+            // Booked slot (for Doctor) - red and clickable for info
             holder.itemView.setBackgroundColor(Color.RED)
-            holder.itemView.isClickable = false
+            holder.itemView.setOnClickListener {
+                onBookedSlotClick?.invoke(timeSlot) // Doctor clicks booked slot
+            }
         } else {
-            // For Patient: highlight selected slot
+            // Free slot (for Patient)
             if (timeSlot == selectedSlot) {
                 holder.itemView.setBackgroundResource(R.drawable.selected_slot_background)
             } else {
@@ -42,7 +45,7 @@ class TimeSlotDisplayAdapter(
             }
 
             holder.itemView.setOnClickListener {
-                onSlotSelected?.invoke(timeSlot)
+                onSlotSelected?.invoke(timeSlot) // Patient clicks free slot
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.eclinic.calendar
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +21,7 @@ class TimeSlotAdapter(
     override fun onBindViewHolder(holder: SlotViewHolder, position: Int) {
         val time = timeSlots[position]
         holder.text.text = time
-        holder.text.setBackgroundColor(
-            if (selected.contains(time)) Color.GREEN else Color.LTGRAY
-        )
+        holder.text.isSelected = selected.contains(time) // let the selector handle background
 
         holder.text.setOnClickListener {
             if (selected.contains(time)) {

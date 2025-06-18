@@ -4,27 +4,58 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/ourbluebutlighter">
 
-    <!-- Top Week View Header (You can expand this to include week navigation buttons) -->
-    <TextView
-        android:id="@+id/dateTitle"
+    <!-- Top Week View Header with Navigation Arrows -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Selected Day"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
         android:gravity="center"
-        android:paddingBottom="8dp" />
+        android:paddingBottom="8dp">
+
+        <Button
+            android:id="@+id/btnPrevDay"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="◀"
+            android:textSize="20dp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/purple_500" />
+
+        <TextView
+            android:id="@+id/dateTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Selected Day"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnNextDay"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="▶"
+            android:textSize="20dp"
+            android:background="@android:color/transparent"
+            android:textColor="@color/purple_500" />
+
+    </LinearLayout>
 
     <!-- Add Time Slot Button -->
     <Button
         android:id="@+id/btnAddSlots"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Time Slot(s)" />
+        android:text="Add Time Slot(s)"
+        android:layout_marginTop="8dp" />
 
-    <!-- List of selected slots -->
+    <!-- RecyclerView for displaying time slots -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -32,13 +63,13 @@
         android:layout_weight="1"
         android:paddingTop="16dp" />
 
+    <!-- Confirm Visit Button -->
     <Button
         android:id="@+id/btnConfirmVisit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Confirm Visit"
         android:visibility="gone"
-        android:layout_marginTop="16dp"/>
-
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>
