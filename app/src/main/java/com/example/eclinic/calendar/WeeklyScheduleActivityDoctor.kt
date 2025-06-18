@@ -168,11 +168,13 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
                 // Now get patient info
                 db.collection("users").document(patientId).get()
                     .addOnSuccessListener { patientDoc ->
-                        val patientName = patientDoc.getString("name") ?: "Unknown"
+                        val firstName = patientDoc.getString("firstName") ?: ""
+                        val lastName = patientDoc.getString("lastName") ?: ""
+                        val patientName = "$firstName $lastName".trim()
 
                         AlertDialog.Builder(this)
                             .setTitle("Booked Slot Info")
-                            .setMessage("Patient: $patientName\nVisit Type: $visitType\nHour: $hour")
+                            .setMessage("Patient: $patientName\nVisit Type: $visitType\nTime: $hour")
                             .setPositiveButton("Cancel Appointment") { _, _ ->
                                 cancelAppointment(booking.id)
                             }

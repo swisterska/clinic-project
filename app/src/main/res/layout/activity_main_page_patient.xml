@@ -22,15 +22,26 @@
         android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/upcomingVisitTextView"
+        android:id="@+id/upcomingVisitsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Upcoming Visits"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/petNameTextView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/upcomingVisitsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/petNameTextView"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="Fetching upcoming visit..."
-        android:textSize="16sp"
-        android:textColor="@color/black" />
+        android:layout_below="@id/upcomingVisitsTitle"        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_above="@id/ScheduleAnApointmentBtn"
+        />
+
 
 
     <ImageButton
