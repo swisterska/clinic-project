@@ -9,5 +9,6 @@
         android:id="@+id/recyclerTimeSlots"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        />
 </FrameLayout>

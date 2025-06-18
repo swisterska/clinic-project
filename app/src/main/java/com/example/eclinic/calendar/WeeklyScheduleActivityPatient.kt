@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import com.google.firebase.Timestamp
 
 class WeeklyScheduleActivityPatient : AppCompatActivity() {
 
@@ -24,6 +25,8 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
     private lateinit var selectedDate: Calendar
     private var selectedSlots: List<String> = listOf()
     private var selectedPatientSlot: String? = null
+    private lateinit var btnPrevDay: Button
+    private lateinit var btnNextDay: Button
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -54,6 +57,17 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         updateDateTitle()
+
+        btnPrevDay = findViewById(R.id.btnPrevDay)
+        btnNextDay = findViewById(R.id.btnNextDay)
+
+        btnPrevDay.setOnClickListener {
+            changeDay(-1)
+        }
+
+        btnNextDay.setOnClickListener {
+            changeDay(1)
+        }
         loadSlotsFromFirebase()
     }
 
@@ -102,15 +116,15 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
     private fun bookAppointment(slot: String) {
         val patientId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val visitName = intent.getStringExtra("visitName") ?: "Unknown"
+        val timestamp = System.currentTimeMillis()
 
         val appointment = mapOf(
             "id" to patientId,
             "doctorId" to doctorId,
             "date" to SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time),
             "hour" to slot,
-            "timestamp" to System.currentTimeMillis(),
+            "timestamp" to Timestamp.now(),  // ← Correct format
             "typeOfTheVisit" to visitName
-
         )
 
         db.collection("confirmedAppointments")
@@ -122,6 +136,12 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Booking failed.", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun changeDay(offset: Int) {
+        selectedDate.add(Calendar.DAY_OF_MONTH, offset)
+        updateDateTitle()
+        loadSlotsFromFirebase()
     }
 
 }

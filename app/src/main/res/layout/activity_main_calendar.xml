@@ -3,24 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/ourbluebutlighter"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvWelcomeMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome, User"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"/>
-
-    <CalendarView
+    <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        />
+        app:mcv_selectionColor="@color/ourblue"
+        app:mcv_tileSize="40dp"
+        app:mcv_showOtherDates="all"
+        app:mcv_arrowColor="@color/ourblue"
+        app:mcv_dateTextAppearance="@style/CalendarDateStyle"
+        app:mcv_weekDayTextAppearance="@style/CalendarWeekStyle" />
 
-    </LinearLayout>
+</LinearLayout>

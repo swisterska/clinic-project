@@ -13,9 +13,11 @@ import com.example.eclinic.logRegClasses.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.Timestamp
 
 // Importuj nową aktywność z listą lekarzy
 import com.example.eclinic.patientClasses.DoctorsListActivity // <-- Nowa nazwa aktywności
+
 
 class MainPagePatient : AppCompatActivity() {
 
@@ -86,7 +88,7 @@ class MainPagePatient : AppCompatActivity() {
 
         db.collection("confirmedAppointments")
             .whereEqualTo("id", patientId)
-            .whereGreaterThan("timestamp", System.currentTimeMillis())
+            .whereGreaterThan("timestamp", Timestamp.now())
             .orderBy("timestamp")
             .limit(1)
             .get()
