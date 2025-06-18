@@ -3,6 +3,7 @@ package com.example.eclinic.doctorClasses
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.eclinic.R
@@ -33,12 +34,12 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
         visitsRecyclerView = findViewById(R.id.visitTypesRecyclerView)
         noVisitsTextView = findViewById(R.id.noVisitsTextView)
 
-        adapter = VisitTypeAdapter(listOf(), { name, price ->
-            visitNameEditText.setText(name)
-            visitPriceEditText.setText(price)
-        }, { name ->
-            deleteVisitType(name)
-        })
+        adapter = VisitTypeAdapter(
+            listOf(),
+            { name, price -> showEditDialog(name, price) },
+            { name -> deleteVisitType(name) }
+        )
+
 
 
         visitsRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -91,4 +92,52 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to load visit types", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun showEditDialog(oldName: String, oldPrice: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_edit_visit_type, null)
+        val nameEdit = dialogView.findViewById<EditText>(R.id.editVisitName)
+        val priceEdit = dialogView.findViewById<EditText>(R.id.editVisitPrice)
+
+        nameEdit.setText(oldName)
+        priceEdit.setText(oldPrice)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Edit Visit Type")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val newName = nameEdit.text.toString().trim()
+                val newPrice = priceEdit.text.toString().trim()
+                if (newName.isNotEmpty() && newPrice.isNotEmpty()) {
+                    updateVisitType(oldName, newName, newPrice)
+                } else {
+                    Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.show()
+    }
+
+    private fun updateVisitType(oldName: String, newName: String, newPrice: String) {
+        val docRef = db.collection("visitTypes").document(uid)
+
+        val updates = hashMapOf<String, Any>(
+            oldName to com.google.firebase.firestore.FieldValue.delete()
+        )
+
+        docRef.update(updates)
+            .addOnSuccessListener {
+                docRef.set(mapOf(newName to newPrice), SetOptions.merge())
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Updated successfully", Toast.LENGTH_SHORT).show()
+                        loadVisitTypes()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
 }
