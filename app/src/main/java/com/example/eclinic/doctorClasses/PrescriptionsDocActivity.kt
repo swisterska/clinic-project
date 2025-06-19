@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.example.eclinic.chat.ChatMessage
+import com.example.eclinic.chat.ChatUtils
 import com.google.firebase.firestore.FieldValue
 
 
@@ -283,9 +284,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
                 Toast.makeText(this, "Prescription saved", Toast.LENGTH_SHORT).show()
                 val hyperlink = "<a href=\"$url\">here</a>"
                 val messageText = "A new prescription was issued for you. You can check it $hyperlink or in the prescription tab in the app."
-                sendChatMessageToPatient(
-                    patientId = patientId,
-                    messageText
+                ChatUtils.sendMessage(
+                    fromId = doctorId,
+                    toId = patientId,
+                    messageText = messageText
                 )
             }
             .addOnFailureListener {
@@ -301,48 +303,49 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         comments.text?.clear()
         patientSpinner.setSelection(0)
     }
-
-    private fun sendChatMessageToPatient(patientId: String, messageText: String) {
-        val currentUserId = auth.currentUser?.uid ?: return
-        val firestore = FirebaseFirestore.getInstance()
-
-        val participantsSorted = listOf(currentUserId, patientId).sorted()
-        val generatedChatId = "${participantsSorted[0]}_${participantsSorted[1]}"
-
-        val chatRef = firestore.collection("chats").document(generatedChatId)
-
-        chatRef.get().addOnSuccessListener { docSnapshot ->
-            if (!docSnapshot.exists()) {
-                val newChatData = hashMapOf(
-                    "participants" to participantsSorted,
-                    "lastMessageTimestamp" to FieldValue.serverTimestamp(),
-                    "lastMessageText" to messageText
-                )
-                chatRef.set(newChatData)
-            } else {
-                chatRef.update(
-                    "lastMessageTimestamp", FieldValue.serverTimestamp(),
-                    "lastMessageText", messageText
-                )
-            }
-
-            val message = ChatMessage(
-                senderId = currentUserId,
-                receiverId = patientId,
-                messageText = messageText
-            )
-
-            chatRef.collection("messages")
-                .add(message)
-                .addOnSuccessListener {
-                    Log.d("PrescriptionsDoc", "Wysłano wiadomość o recepcie do pacjenta.")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("PrescriptionsDoc", "Błąd wysyłania wiadomości: ${e.message}")
-                }
-        }.addOnFailureListener { e ->
-            Log.e("PrescriptionsDoc", "Błąd sprawdzania czatu: ${e.message}")
-        }
-    }
+//companion object {
+//    fun sendChatMessageToPatient(patientId: String, messageText: String) {
+//        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+//        val firestore = FirebaseFirestore.getInstance()
+//
+//        val participantsSorted = listOf(currentUserId, patientId).sorted()
+//        val generatedChatId = "${participantsSorted[0]}_${participantsSorted[1]}"
+//
+//        val chatRef = firestore.collection("chats").document(generatedChatId)
+//
+//        chatRef.get().addOnSuccessListener { docSnapshot ->
+//            if (!docSnapshot.exists()) {
+//                val newChatData = hashMapOf(
+//                    "participants" to participantsSorted,
+//                    "lastMessageTimestamp" to FieldValue.serverTimestamp(),
+//                    "lastMessageText" to messageText
+//                )
+//                chatRef.set(newChatData)
+//            } else {
+//                chatRef.update(
+//                    "lastMessageTimestamp", FieldValue.serverTimestamp(),
+//                    "lastMessageText", messageText
+//                )
+//            }
+//
+//            val message = ChatMessage(
+//                senderId = currentUserId,
+//                receiverId = patientId,
+//                messageText = messageText
+//            )
+//
+//            chatRef.collection("messages")
+//                .add(message)
+//                .addOnSuccessListener {
+//                    Log.d("PrescriptionsDoc", "Wysłano wiadomość o recepcie do pacjenta.")
+//                }
+//                .addOnFailureListener { e ->
+//                    Log.e("PrescriptionsDoc", "Błąd wysyłania wiadomości: ${e.message}")
+//                }
+//        }.addOnFailureListener { e ->
+//            Log.e("PrescriptionsDoc", "Błąd sprawdzania czatu: ${e.message}")
+//        }
+//    }
+//}
 
 }
