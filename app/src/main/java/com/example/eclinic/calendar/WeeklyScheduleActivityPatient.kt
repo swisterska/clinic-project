@@ -107,12 +107,42 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
                     val bookedSlots = confirmedDocs.mapNotNull { it.getString("hour") }
 
                     // Remove booked slots from available slots
-                    selectedSlots = allSlots.filter { it !in bookedSlots }
+                    val availableSlots = allSlots.filter { it !in bookedSlots }
+
+                    // Check if selected date is today
+                    val now = Calendar.getInstance()
+                    val isToday = selectedDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                            selectedDate.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR)
+
+                    selectedSlots = if (isToday) {
+                        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+                        // Add 10-minute margin to current time
+                        now.add(Calendar.MINUTE, 10)
+
+                        availableSlots.filter { timeStr ->
+                            try {
+                                val slotTime = formatter.parse(timeStr) ?: return@filter false
+                                val slotCalendar = Calendar.getInstance().apply {
+                                    time = slotTime
+                                    set(Calendar.YEAR, selectedDate.get(Calendar.YEAR))
+                                    set(Calendar.MONTH, selectedDate.get(Calendar.MONTH))
+                                    set(Calendar.DAY_OF_MONTH, selectedDate.get(Calendar.DAY_OF_MONTH))
+                                }
+                                slotCalendar.after(now)
+                            } catch (e: Exception) {
+                                false
+                            }
+                        }
+                    } else {
+                        availableSlots
+                    }
 
                     updateTimeSlots()
                 }
         }
     }
+
 
 
     private fun bookAppointment(slot: String) {

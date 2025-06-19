@@ -19,6 +19,7 @@ class AdminMainPage : AppCompatActivity() {
 
     private lateinit var layoutContainer: LinearLayout
     private lateinit var btnAddDoctor: MaterialButton
+    private lateinit var btnLogout: ImageButton
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
@@ -28,11 +29,20 @@ class AdminMainPage : AppCompatActivity() {
 
         layoutContainer = findViewById(R.id.layoutContainer)
         btnAddDoctor = findViewById(R.id.btnAddDoctor)
+        btnLogout = findViewById(R.id.btnLogout)
 
         fetchUnverifiedDoctors()
 
         btnAddDoctor.setOnClickListener {
             showAddDoctorDialog()
+        }
+
+        btnLogout.setOnClickListener{
+            auth.signOut()
+            val intent = Intent(this, com.example.eclinic.logRegClasses.LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)

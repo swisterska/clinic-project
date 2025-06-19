@@ -21,6 +21,9 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.eclinic.chat.ChatMessage
+import com.google.firebase.firestore.FieldValue
+
 
 class PrescriptionsDocActivity : AppCompatActivity() {
 
@@ -58,28 +61,38 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         val doctorId = auth.currentUser?.uid ?: return
 
         val patientNames = mutableListOf<String>()
-        patientNames.add("Test Patient")
-        patientMap["Test Patient"] = "fObJbIiGW8SxlULhvy5GaqoXXxO2"
 
-        db.collection("appointments")
+        db.collection("confirmedAppointments")
             .whereEqualTo("doctorId", doctorId)
             .get()
             .addOnSuccessListener { result ->
                 for (doc in result) {
-                    val name = doc.getString("patientName") ?: continue
-                    val id = doc.getString("patientId") ?: continue
-                    if (!patientMap.containsKey(name)) {
-                        patientNames.add(name)
-                        patientMap[name] = id
-                    }
-                }
+                    val patientId = doc.getString("id") ?: continue
 
-                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, patientNames)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                patientSpinner.adapter = adapter
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to load patients", Toast.LENGTH_SHORT).show()
+                    db.collection("users").document(patientId).get()
+                        .addOnSuccessListener { userDoc ->
+                            val firstName = userDoc.getString("firstName") ?: ""
+                            val lastName = userDoc.getString("lastName") ?: ""
+                            val fullName = "$firstName $lastName".trim()
+
+                            if (!patientMap.containsKey(fullName)) {
+                                patientNames.add(fullName)
+                                patientMap[fullName] = patientId
+                            }
+
+                            val adapter = ArrayAdapter(
+                                this,
+                                android.R.layout.simple_spinner_item,
+                                patientNames
+                            )
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            patientSpinner.adapter = adapter
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to load patients", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                }
             }
     }
 
@@ -245,7 +258,6 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 storageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
                     savePrescriptionToFirestore(downloadUrl.toString(), doctorId, patientId)
-                    sharePrescriptionLink(downloadUrl.toString())
                     clearInputs()
                 }
             }
@@ -269,20 +281,18 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             .add(prescriptionData)
             .addOnSuccessListener {
                 Toast.makeText(this, "Prescription saved", Toast.LENGTH_SHORT).show()
+                val hyperlink = "<a href=\"$url\">here</a>"
+                val messageText = "A new prescription was issued for you. You can check it $hyperlink or in the prescription tab in the app."
+                sendChatMessageToPatient(
+                    patientId = patientId,
+                    messageText
+                )
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to save prescription", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun sharePrescriptionLink(link: String) {
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Your Prescription")
-            putExtra(Intent.EXTRA_TEXT, "Here is your prescription link:\n$link")
-        }
-        startActivity(Intent.createChooser(intent, "Share Prescription"))
-    }
 
     private fun clearInputs() {
         medicationName.text?.clear()
@@ -291,4 +301,48 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         comments.text?.clear()
         patientSpinner.setSelection(0)
     }
+
+    private fun sendChatMessageToPatient(patientId: String, messageText: String) {
+        val currentUserId = auth.currentUser?.uid ?: return
+        val firestore = FirebaseFirestore.getInstance()
+
+        val participantsSorted = listOf(currentUserId, patientId).sorted()
+        val generatedChatId = "${participantsSorted[0]}_${participantsSorted[1]}"
+
+        val chatRef = firestore.collection("chats").document(generatedChatId)
+
+        chatRef.get().addOnSuccessListener { docSnapshot ->
+            if (!docSnapshot.exists()) {
+                val newChatData = hashMapOf(
+                    "participants" to participantsSorted,
+                    "lastMessageTimestamp" to FieldValue.serverTimestamp(),
+                    "lastMessageText" to messageText
+                )
+                chatRef.set(newChatData)
+            } else {
+                chatRef.update(
+                    "lastMessageTimestamp", FieldValue.serverTimestamp(),
+                    "lastMessageText", messageText
+                )
+            }
+
+            val message = ChatMessage(
+                senderId = currentUserId,
+                receiverId = patientId,
+                messageText = messageText
+            )
+
+            chatRef.collection("messages")
+                .add(message)
+                .addOnSuccessListener {
+                    Log.d("PrescriptionsDoc", "Wysłano wiadomość o recepcie do pacjenta.")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("PrescriptionsDoc", "Błąd wysyłania wiadomości: ${e.message}")
+                }
+        }.addOnFailureListener { e ->
+            Log.e("PrescriptionsDoc", "Błąd sprawdzania czatu: ${e.message}")
+        }
+    }
+
 }

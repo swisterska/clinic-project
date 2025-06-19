@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.text.method.LinkMovementMethod
+import androidx.core.text.HtmlCompat
 import com.example.eclinic.R
 
 class ChatAdapter(
@@ -39,7 +41,9 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = messages[position]
-        holder.messageText.text = message.messageText
+
+        holder.messageText.text = HtmlCompat.fromHtml(message.messageText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        holder.messageText.movementMethod = LinkMovementMethod.getInstance()
 
         message.timestamp?.let {
             holder.timestampText.text = android.text.format.DateFormat.format("HH:mm", it).toString()

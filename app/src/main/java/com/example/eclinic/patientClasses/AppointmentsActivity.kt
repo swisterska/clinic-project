@@ -56,6 +56,16 @@ class AppointmentsActivity : AppCompatActivity() {
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
+        // Midnight today
+        val todayCal = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val today = todayCal.time
+
+
         db.collection("confirmedAppointments")
             .whereEqualTo("id", uid)
             .get()
@@ -72,8 +82,7 @@ class AppointmentsActivity : AppCompatActivity() {
                     val doctorId = doc.getString("doctorId") ?: continue
 
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
-                    if (parsedDate != null && parsedDate.after(now)) {
-                        val docId = doc.id
+                    if (parsedDate != null && !parsedDate.before(today)) {                        val docId = doc.id
                         val task = db.collection("users").document(doctorId).get()
                             .addOnSuccessListener { doctorDoc ->
                                 val firstName = doctorDoc.getString("firstName") ?: ""

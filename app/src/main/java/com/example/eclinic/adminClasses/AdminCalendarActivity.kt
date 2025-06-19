@@ -1,10 +1,13 @@
 package com.example.eclinic.adminClasses
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.calendar.MainCalendarActivity
 import com.example.eclinic.doctorClasses.Doctor
 import com.example.eclinic.patientClasses.DoctorAdapter
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,7 +29,7 @@ class AdminCalendarActivity : AppCompatActivity() {
 
         doctorAdapter = DoctorAdapter(
             doctorList,
-            onDoctorClick = { /* no action for now */ },
+            onDoctorClick = { doctor -> openDoctorCalendar(doctor) },
             onInfoClick = { /* no action, hidden anyway */ }
         )
         recyclerView.adapter = doctorAdapter
@@ -48,4 +51,15 @@ class AdminCalendarActivity : AppCompatActivity() {
                 doctorAdapter.notifyDataSetChanged()
             }
     }
+
+    private fun openDoctorCalendar(doctor: Doctor) {
+        doctor.uid?.let { uid ->
+            val intent = Intent(this, MainCalendarActivity::class.java)
+            intent.putExtra("id", uid)
+            startActivity(intent)
+        } ?: run {
+            Toast.makeText(this, "Invalid doctor ID", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

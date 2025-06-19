@@ -127,7 +127,25 @@ class MainPagePatient : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        val today = Calendar.getInstance().time
+
+        // Midnight today
+        val todayCal = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val today = todayCal.time
+
+        // 7 days later
+        val oneWeekLaterCal = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, 7)
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+        val oneWeekLater = oneWeekLaterCal.time
 
         db.collection("confirmedAppointments")
             .whereEqualTo("id", patientId)
@@ -146,8 +164,7 @@ class MainPagePatient : AppCompatActivity() {
 
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
 
-                    if (parsedDate != null && parsedDate.after(today)) {
-                        val task = db.collection("users").document(doctorId).get()
+                    if (parsedDate != null && !parsedDate.before(today) && !parsedDate.after(oneWeekLater)) {                        val task = db.collection("users").document(doctorId).get()
                             .addOnSuccessListener { doctorDoc ->
                                 val firstName = doctorDoc.getString("firstName") ?: ""
                                 val lastName = doctorDoc.getString("lastName") ?: ""
