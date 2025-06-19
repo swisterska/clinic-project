@@ -1,11 +1,19 @@
+
+
 package com.example.eclinic.calendar
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prolificinteractive.materialcalendarview.*
 import com.prolificinteractive.materialcalendarview.spans.DotSpan
@@ -16,57 +24,173 @@ class MainCalendarActivity : AppCompatActivity() {
 
     private lateinit var calendarView: MaterialCalendarView
     private lateinit var firestore: FirebaseFirestore
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var btnConfirmVisit: MaterialButton
+
     private var doctorId: String? = null
     private var visitName: String? = null
     private var visitPrice: String? = null
+    private var userRole: String? = null
+    private var selectedDateKey: String? = null
+    private var selectedSlot: String? = null
+    private var availableSlots: List<String> = emptyList()
+    private lateinit var textAvailableHours: TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_calendar)
 
-        calendarView = findViewById(R.id.calendarView)
         firestore = FirebaseFirestore.getInstance()
+
+
+        calendarView = findViewById(R.id.calendarView)
+        recyclerView = findViewById(R.id.timeSlotsRecyclerView)
+        btnConfirmVisit = findViewById(R.id.btnConfirmVisit)
+        firestore = FirebaseFirestore.getInstance()
+
+        textAvailableHours = findViewById(R.id.textAvailableHours)
+        textAvailableHours.visibility = View.GONE
 
         doctorId = intent.getStringExtra("id")
         visitName = intent.getStringExtra("visitName")
         visitPrice = intent.getStringExtra("visitPrice")
 
-        if (doctorId == null) {
-            Toast.makeText(this, "Missing doctor ID", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        btnConfirmVisit.visibility = View.GONE
+
+        btnConfirmVisit.setOnClickListener {
+            selectedSlot?.let { bookAppointment(it) }
         }
 
-        // Prevent past date selection
         calendarView.state().edit()
             .setMinimumDate(CalendarDay.today())
             .commit()
 
-        // Fetch available slots and highlight those days
         fetchAvailableDatesAndHighlight()
 
-        // Handle date click
         calendarView.setOnDateChangedListener { _, selectedDate, _ ->
             val selectedMillis = Calendar.getInstance().apply {
                 set(selectedDate.year, selectedDate.month, selectedDate.day)
             }.timeInMillis
 
-            val nextIntent = if (visitName != null) {
-                Intent(this, WeeklyScheduleActivityPatient::class.java).apply {
-                    putExtra("visitName", visitName)
-                    putExtra("visitPrice", visitPrice)
-                }
-            } else {
-                Intent(this, WeeklyScheduleActivityDoctor::class.java)
-            }
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            selectedDateKey = formatter.format(Date(selectedMillis))
 
-            nextIntent.putExtra("selectedDate", selectedMillis)
-            nextIntent.putExtra("id", doctorId)
-            startActivity(nextIntent)
+            checkRoleAndPerformAction(selectedMillis) // Role check happens here ONLY after clicking
+        }
+
+    }
+
+    private fun checkRoleAndPerformAction(selectedMillis: Long) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let {
+            firestore.collection("users").document(it.uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val role = document.getString("role") ?: "PATIENT"
+                        if (role == "DOCTOR") {
+                            val intent = Intent(this, WeeklyScheduleActivityDoctor::class.java).apply {
+                                putExtra("selectedDate", selectedMillis)
+                                putExtra("id", doctorId)
+                            }
+                            startActivity(intent)
+                        } else {
+                            // PATIENT stays and loads slots
+                            loadAvailableSlotsForPatient()
+                        }
+                    } else {
+                        Toast.makeText(this, "User data not found.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to fetch user data.", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
-    private fun fetchAvailableDatesAndHighlight() {
+
+
+
+    private fun bookAppointment(slot: String) {
+            val patientId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+            val visit = visitName ?: "Unknown"
+            val price = visitPrice ?: "Unknown"
+
+            val appointment = mapOf(
+                "id" to patientId,
+                "doctorId" to doctorId,
+                "date" to selectedDateKey,
+                "hour" to slot,
+                "timestamp" to com.google.firebase.Timestamp.now(),
+                "typeOfTheVisit" to visit,
+                "price" to price
+            )
+
+            firestore.collection("confirmedAppointments")
+                .add(appointment)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Appointment booked!", Toast.LENGTH_SHORT).show()
+                    finish() // Or redirect to MainPagePatient
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Booking failed.", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        private fun loadAvailableSlotsForPatient() {
+            val dateKey = selectedDateKey ?: return
+            val docId = doctorId ?: return
+
+            firestore.collection("appointments").document(docId).get().addOnSuccessListener { doc ->
+                val allSlots = (doc[dateKey] as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+
+                firestore.collection("confirmedAppointments")
+                    .whereEqualTo("doctorId", docId)
+                    .whereEqualTo("date", dateKey)
+                    .get()
+                    .addOnSuccessListener { confirmedDocs ->
+                        val bookedSlots = confirmedDocs.mapNotNull { it.getString("hour") }
+                        availableSlots = allSlots.filter { it !in bookedSlots }
+                            .sortedBy { it }
+
+                        if (availableSlots.isEmpty()) {
+                            textAvailableHours.text = "No available hours."
+                            textAvailableHours.visibility = View.VISIBLE
+                            recyclerView.adapter = null
+                        } else {
+                            textAvailableHours.text = "Available hours:"
+                            textAvailableHours.visibility = View.VISIBLE
+                            recyclerView.adapter = TimeSlotDisplayAdapter(
+                                availableSlots,
+                                selectedSlot,
+                                onSlotSelected = { slot ->
+                                    selectedSlot = slot
+                                    btnConfirmVisit.visibility = View.VISIBLE
+                                    loadAvailableSlotsForPatient() // Refresh to update selection
+                                }
+
+                            )
+                        }
+
+                        recyclerView.adapter = TimeSlotDisplayAdapter(
+                            availableSlots,
+                            selectedSlot,
+                            onSlotSelected = { slot ->
+                                selectedSlot = slot
+                                btnConfirmVisit.visibility = View.VISIBLE
+                                loadAvailableSlotsForPatient()
+                            }
+                        )
+
+
+                    }
+            }
+
+        }
+
+
+        private fun fetchAvailableDatesAndHighlight() {
         val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val today = formatter.format(Date())
 
