@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ourbluebutlighter"
     android:padding="16dp">
 
+    <!-- Calendar View -->
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
@@ -17,5 +19,47 @@
         app:mcv_arrowColor="@color/ourblue"
         app:mcv_dateTextAppearance="@style/CalendarDateStyle"
         app:mcv_weekDayTextAppearance="@style/CalendarWeekStyle" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp" />
+
+
+    <TextView
+        android:id="@+id/textAvailableHours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available hours:"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="8dp"/>
+
+
+    <!-- RecyclerView for Time Slots -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timeSlotsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="4dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+
+    <!-- Confirm Visit Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmVisit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirm Visit"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/ourblue"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
