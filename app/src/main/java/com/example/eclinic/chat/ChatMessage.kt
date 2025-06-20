@@ -4,7 +4,6 @@ import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
-
 data class ChatMessage(
     @DocumentId
     val id: String? = null,
@@ -13,6 +12,4 @@ data class ChatMessage(
     val messageText: String = "",
     @ServerTimestamp
     val timestamp: Date? = null
-) {
-    constructor() : this("", "", "", "")
-}
+)
