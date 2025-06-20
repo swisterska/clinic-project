@@ -1,4 +1,5 @@
 package com.example.eclinic.patientClasses
+
 import com.google.firebase.firestore.DocumentId
 
 data class Patient(
@@ -10,5 +11,5 @@ data class Patient(
     val phone: String = "",
     val dateOfBirth: String = "",
     val gender: String = "",
-    val role: String = "patient"
-)
+    val role: String = "patient",
+    val fcmToken: String = "")
