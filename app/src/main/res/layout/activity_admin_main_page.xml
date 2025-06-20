@@ -133,10 +133,16 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
+        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="105dp"
+        app:itemIconSize="50dp"
         android:layout_alignParentBottom="true"
-        app:menu="@menu/admin_bottom_menu" />
-</LinearLayout>
-
-
+        app:menu="@menu/admin_bottom_menu"
+        app:itemIconTint="@color/black"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
+        app:itemPaddingBottom="-5dp"
+        app:itemPaddingTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+   </LinearLayout>

@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.chat.ChatUtils
+import com.example.eclinic.patientClasses.MainPagePatient
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -52,7 +54,11 @@ class MainCalendarActivity : AppCompatActivity() {
         textAvailableHours = findViewById(R.id.textAvailableHours)
         textAvailableHours.visibility = View.GONE
 
-        doctorId = intent.getStringExtra("id")
+        doctorId = intent.getStringExtra("id") ?: run {
+            Toast.makeText(this, "Missing doctor ID", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
         visitName = intent.getStringExtra("visitName")
         visitPrice = intent.getStringExtra("visitPrice")
 
@@ -131,7 +137,17 @@ class MainCalendarActivity : AppCompatActivity() {
                 .add(appointment)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Appointment booked!", Toast.LENGTH_SHORT).show()
-                    finish() // Or redirect to MainPagePatient
+
+                    // send a message to the patient
+                    ChatUtils.sendMessage(
+                        fromId = doctorId.toString(),
+                        toId = patientId,
+                        messageText = "Thank you for booking a visit with me. If you have any questions, feel free to reach out before the appointment!"
+                    )
+
+                    val intent = Intent(this, MainPagePatient::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Booking failed.", Toast.LENGTH_SHORT).show()

@@ -10,12 +10,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.chat.ChatUtils
 import com.example.eclinic.patientClasses.MainPagePatient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import com.google.firebase.Timestamp
+import com.example.eclinic.doctorClasses.PrescriptionsDocActivity
 
 class WeeklyScheduleActivityPatient : AppCompatActivity() {
 
@@ -164,6 +166,14 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
             .add(appointment)
             .addOnSuccessListener {
                 Toast.makeText(this, "Appointment booked!", Toast.LENGTH_SHORT).show()
+
+                // send a message to the patient
+                ChatUtils.sendMessage(
+                    fromId = doctorId,
+                    toId = patientId,
+                    messageText = "Thank you for booking a visit with me. If you have any questions, feel free to reach out before the appointment!"
+                )
+
                 val intent = Intent(this, MainPagePatient::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
