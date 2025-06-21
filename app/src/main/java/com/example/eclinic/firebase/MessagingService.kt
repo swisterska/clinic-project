@@ -22,7 +22,6 @@ class MessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "FCM_DEBUG"
-        private var notificationId = 0
     }
 
     override fun onNewToken(token: String) {
@@ -65,144 +64,142 @@ class MessagingService : FirebaseMessagingService() {
         Log.d(TAG, "🔹 Data: ${remoteMessage.data}")
         Log.d(TAG, "🔹 Notification: ${remoteMessage.notification}")
 
-        // Sprawdzanie czy wiadomość zawiera ważne dane
+        // Jeśli brakuje powiadomienia lub danych, logujemy i kończymy
         if (remoteMessage.data.isNullOrEmpty() && remoteMessage.notification == null) {
             Log.e(TAG, "🚫 EMPTY MESSAGE - no data or notification payload")
             return
         }
 
+        // Pobierz treść wiadomości z notification payload lub data payload
         val messageBody = remoteMessage.notification?.body ?: remoteMessage.data["message"] ?: run {
-            Log.w(TAG, "ℹ️ No message body, using default")
-            "You have a new notification"
+            Log.w(TAG, "ℹ️ No message body found, using default text.")
+            "You have a new message."
         }
         Log.d(TAG, "📝 Message content: $messageBody")
-
-        // Debugowanie typu wiadomości
-        when (remoteMessage.data["type"]) {
-            "appointment" -> Log.d(TAG, "📅 Appointment change detected")
-            "prescription" -> Log.d(TAG, "💊 Prescription change detected")
-            "message" -> Log.d(TAG, "💬 Chat message detected")
-            else -> Log.d(TAG, "🔘 Unknown message type")
-        }
 
         val user = FirebaseAuth.getInstance().currentUser
         if (user != null) {
             Log.d(TAG, "🔄 Processing notification for user ${user.uid}")
-            getUserRoleAndUnreadCountAndSendNotification(user.uid, messageBody)
+            // Przekazujemy remoteMessage.data do funkcji, aby mieć dostęp do dodatkowych informacji
+            getUserRoleAndSendNotification(user.uid, messageBody, remoteMessage.data)
         } else {
-            Log.w(TAG, "⚠️ No user - sending basic notification")
-            sendNotification(messageBody, "PATIENT", 0)
+            Log.w(TAG, "⚠️ No user logged in. Sending basic notification to Patient.")
+            sendNotification(messageBody, "PATIENT", remoteMessage.data)
         }
     }
 
-    private fun getUserRoleAndUnreadCountAndSendNotification(uid: String, messageBody: String) {
-        Log.d(TAG, "🔄 Fetching user role for $uid")
+    /**
+     * Pobiera rolę użytkownika i wysyła powiadomienie.
+     * Uproszczona wersja tylko dla wiadomości czatu.
+     */
+    private fun getUserRoleAndSendNotification(uid: String, messageBody: String, data: Map<String, String>) {
+        Log.d(TAG, "🔄 Fetching user role for $uid (simplified for chat messages)")
 
         FirebaseFirestore.getInstance().collection("users").document(uid).get()
             .addOnSuccessListener { userDoc ->
                 if (userDoc.exists()) {
-                    val role = userDoc.getString("role") ?: "PATIENT".also {
-                        Log.d(TAG, "👤 User role: $it")
-                    }
-
-                    Log.d(TAG, "🔍 Checking unread messages count...")
-                    getUnreadMessagesCount(uid) { count ->
-                        Log.d(TAG, "📩 Unread messages: $count")
-                        sendNotification(messageBody, role, count)
-                    }
+                    val role = userDoc.getString("role") ?: "PATIENT" // Domyślnie Patient
+                    Log.d(TAG, "👤 User role: $role")
+                    sendNotification(messageBody, role, data)
                 } else {
-                    Log.w(TAG, "📭 User document doesn't exist")
-                    sendNotification(messageBody, "PATIENT", 0)
+                    Log.w(TAG, "📭 User document doesn't exist. Sending as PATIENT.")
+                    sendNotification(messageBody, "PATIENT", data)
                 }
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "❌ Failed to get user role", e)
-                sendNotification(messageBody, "PATIENT", 0)
+                Log.e(TAG, "❌ Failed to get user role. Sending as PATIENT.", e)
+                sendNotification(messageBody, "PATIENT", data)
             }
     }
 
-    private fun getUnreadMessagesCount(uid: String, callback: (Int) -> Unit) {
-        Log.d(TAG, "🔎 Querying unread messages for $uid")
-
-        FirebaseFirestore.getInstance().collectionGroup("messages")
-            .whereEqualTo("toUserId", uid)
-            .whereEqualTo("read", false)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                val count = querySnapshot.size().also {
-                    Log.d(TAG, "📊 Found $it unread messages")
-                }
-                callback(count)
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "❌ Failed to get unread messages", e)
-                callback(0)
-            }
-    }
-
-    private fun sendNotification(messageBody: String, role: String, unreadMessagesCount: Int) {
-        Log.d(TAG, "🛠 Building notification...")
+    /**
+     * Tworzy i wyświetla powiadomienie czatu.
+     * Przekazuje dane do Intentu, aby otworzyć odpowiedni czat.
+     */
+    private fun sendNotification(messageBody: String, role: String, data: Map<String, String>) {
+        Log.d(TAG, "🛠 Building chat notification...")
         Log.d(TAG, "🔹 Role: $role")
-        Log.d(TAG, "🔹 Unread count: $unreadMessagesCount")
+        Log.d(TAG, "🔹 Message Data: $data")
 
-        val targetActivity = if (role.equals("DOCTOR", ignoreCase = true)) {
-            Log.d(TAG, "👨‍⚕️ Routing to ChatPatientActivity")
-            Intent(this, ChatPatientActivity::class.java)
-        } else {
-            Log.d(TAG, "👤 Routing to ChatDoctorActivity")
-            Intent(this, ChatDoctorActivity::class.java)
-        }.apply {
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            Log.d(TAG, "🔗 Intent flags set")
+        // Sprawdź, czy senderId istnieje w danych. Jest to kluczowe dla otwarcia odpowiedniego czatu.
+        val chatPartnerId = data["senderId"]
+        if (chatPartnerId.isNullOrBlank()) {
+            Log.e(TAG, "🚫 Missing 'senderId' in message data. Cannot route to specific chat.")
+            // Możesz tutaj zdecydować, czy mimo to wyświetlić powiadomienie i otworzyć ogólną stronę czatów,
+            // czy w ogóle nie wyświetlać powiadomienia. Na razie wyświetlimy bez konkretnego routingu.
         }
+
+        val targetIntent: Intent
+        if (role.equals("DOCTOR", ignoreCase = true)) {
+            Log.d(TAG, "👨‍⚕️ Routing to ChatPatientActivity for Doctor.")
+            targetIntent = Intent(this, ChatPatientActivity::class.java)
+            if (!chatPartnerId.isNullOrBlank()) {
+                targetIntent.putExtra("patientId", chatPartnerId) // Dla lekarza, chatPartnerId to patientId
+                Log.d(TAG, "🔗 Added patientId: $chatPartnerId to intent.")
+            }
+        } else {
+            Log.d(TAG, "👤 Routing to ChatDoctorActivity for Patient.")
+            targetIntent = Intent(this, ChatDoctorActivity::class.java)
+            if (!chatPartnerId.isNullOrBlank()) {
+                targetIntent.putExtra("doctorId", chatPartnerId) // Dla pacjenta, chatPartnerId to doctorId
+                Log.d(TAG, "🔗 Added doctorId: $chatPartnerId to intent.")
+            }
+        }
+
+        // Dodaj flagi dla Intentu
+        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        Log.d(TAG, "🔗 Intent flags set for target activity.")
+
+        // Użyj unikalnego ID powiadomienia
+        val uniqueNotificationId = System.currentTimeMillis().toInt()
 
         val pendingIntent = try {
             PendingIntent.getActivity(
                 this,
-                notificationId++,
-                targetActivity,
+                uniqueNotificationId,
+                targetIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             ).also {
-                Log.d(TAG, "✅ PendingIntent created")
+                Log.d(TAG, "✅ PendingIntent created with ID: $uniqueNotificationId")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "❌ PendingIntent creation failed", e)
+            Log.e(TAG, "❌ PendingIntent creation failed: ${e.message}", e)
             null
         }
 
-        val channelId = "eclinic_notifications"
+        val channelId = "eclinic_chat_notifications" // Zmieniono ID kanału dla jasności
+        val channelName = "Eclinic Chat Messages"
+
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle("Eclinic")
+            .setSmallIcon(R.drawable.ic_notification) // Upewnij się, że ta ikona istnieje
+            .setContentTitle("New Message - Eclinic")
             .setContentText(messageBody)
             .setAutoCancel(true)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .apply {
                 pendingIntent?.let { setContentIntent(it) }
-                if (unreadMessagesCount > 0) {
-                    setNumber(unreadMessagesCount)
-                    Log.d(TAG, "🔢 Badge count set: $unreadMessagesCount")
-                }
             }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
+        // Tworzenie kanału powiadomień (tylko raz na instalację aplikacji)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel(
+            val channel = NotificationChannel(
                 channelId,
-                "Eclinic Notifications",
+                channelName,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Channel for eClinic notifications"
+                description = "Notifications for chat messages in eClinic."
                 enableVibration(true)
-                notificationManager.createNotificationChannel(this)
-                Log.d(TAG, "📡 Notification channel created")
             }
+            notificationManager.createNotificationChannel(channel)
+            Log.d(TAG, "📡 Notification channel '$channelName' created or updated.")
         }
 
-        val currentNotificationId = System.currentTimeMillis().toInt()
-        notificationManager.notify(currentNotificationId, notificationBuilder.build())
-        Log.d(TAG, "📢 Notification displayed (ID: $currentNotificationId)")
+        // Wyświetl powiadomienie
+        notificationManager.notify(uniqueNotificationId, notificationBuilder.build())
+        Log.d(TAG, "📢 Notification displayed (ID: $uniqueNotificationId).")
         Log.d(TAG, "═════════════════════════════════════")
     }
 }

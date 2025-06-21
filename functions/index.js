@@ -24,6 +24,8 @@ exports.sendMessageNotification = onDocumentCreated("chats/{chatId}/messages/{me
     return null;
   }
 
+  const senderDoc = await firestore.collection("users").doc(senderId).get();
+  const senderRole = senderDoc.data()?.role || "UNKNOWN";
   const payload = {
     notification: {
       title: "New message",
@@ -32,6 +34,7 @@ exports.sendMessageNotification = onDocumentCreated("chats/{chatId}/messages/{me
     data: {
       chatId: event.params.chatId,
       senderId,
+      senderRole,
     },
   };
 
