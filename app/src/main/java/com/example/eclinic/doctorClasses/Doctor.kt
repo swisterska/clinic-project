@@ -4,18 +4,20 @@ import com.google.firebase.firestore.DocumentId
 
 data class Doctor(
     @DocumentId
-    val uid: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
-    val email: String = "",
-    val phone: String = "",
-    val specialization: String = "",
-    val pwzNumber: String = "",
-    val title: String = "",
-    val workplace: String = "",
-    val bio: String = "",
-    val role: String = "doctor"
+    var uid: String = "",
+    var firstName: String = "",
+    var lastName: String = "",
+    var email: String = "",
+    var phone: String = "",
+    var specialization: String = "",
+    var pwzNumber: String = "",
+    var title: String = "",
+    var workplace: String = "",
+    var bio: String = "",
+    var role: String = "doctor",
+    var fcmToken: String = ""
 )
+
 {
     constructor() : this("", "", "", "", "", "", "", "", "", "")
 }

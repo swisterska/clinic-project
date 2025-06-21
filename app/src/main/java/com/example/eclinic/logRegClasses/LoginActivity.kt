@@ -1,17 +1,19 @@
 package com.example.eclinic.logRegClasses
 
-import android.os.Bundle
 import android.content.Intent
+import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import com.example.eclinic.R
+import com.example.eclinic.adminClasses.AdminMainPage
 import com.example.eclinic.doctorClasses.MainPageDoctor
 import com.example.eclinic.patientClasses.MainPagePatient
-import com.example.eclinic.adminClasses.AdminMainPage
-
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.messaging.FirebaseMessaging
 
 class LoginActivity : BaseActivity() {
 
@@ -64,10 +66,31 @@ class LoginActivity : BaseActivity() {
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+                        saveFcmToken()        // <-- zapis tokena FCM
                         checkUserRole()
                     } else {
                         showErrorSnackBar(task.exception?.message.toString(), true)
                     }
+                }
+        }
+    }
+
+    private fun saveFcmToken() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { token ->
+                    val userRef = db.collection("users").document(userId)
+                    userRef.set(mapOf("fcmToken" to token), SetOptions.merge())
+                        .addOnSuccessListener {
+                            Log.d("FCM", "Token zapisany do Firestore")
+                        }
+                        .addOnFailureListener {
+                            Log.e("FCM", "Błąd zapisu tokena", it)
+                        }
+                }
+                .addOnFailureListener {
+                    Log.e("FCM", "Nie udało się pobrać tokena", it)
                 }
         }
     }
