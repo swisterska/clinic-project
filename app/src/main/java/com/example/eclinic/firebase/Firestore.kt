@@ -6,8 +6,6 @@ import kotlinx.coroutines.tasks.await
 
 /**
  * A class that handles Firestore operations using Kotlin coroutines.
- * This class provides suspend functions for interacting with the Firestore database,
- * making it suitable for use in coroutines without blocking the main thread.
  */
 class Firestore {
 
@@ -15,12 +13,10 @@ class Firestore {
     private val mFireStore = FirebaseFirestore.getInstance()
 
     /**
-     * Registers a new user or updates an existing user's data in Firestore.
-     * If a document with the user's ID already exists, it will be overwritten with the new data.
-     * This operation is performed asynchronously and the coroutine will suspend until it completes.
+     * Registers or updates a user in Firestore.
      *
-     * @param user The [User] object containing the data to be saved or updated.
-     * @throws Exception If an error occurs during the Firestore save operation, an [Exception] is thrown.
+     * @param user The user object to save.
+     * @throws Exception If there is an error during the save operation.
      */
     suspend fun registerOrUpdateUser(user: User) {
         try {
@@ -39,13 +35,11 @@ class Firestore {
     }
 
     /**
-     * Loads a user's data from Firestore.
-     * This operation fetches the document corresponding to the given user ID.
+     * Loads user data from Firestore.
      *
-     * @param userId The unique identifier of the user whose data is to be loaded.
-     * @return A [Map] where keys are field names and values are their corresponding data,
-     * or `null` if the user document does not exist in Firestore.
-     * @throws Exception If an error occurs during the Firestore fetch operation, an [Exception] is thrown.
+     * @param userId The ID of the user whose data is to be loaded.
+     * @return A map containing user data, or null if the document does not exist.
+     * @throws Exception If there is an error during the fetch operation.
      */
     suspend fun loadUserData(userId: String): Map<String, Any>? {
         try {
@@ -62,24 +56,19 @@ class Firestore {
     }
 
     /**
-     * Updates specific fields in an existing user's Firestore document.
-     * Only fields present in the [updatedData] map will be modified. Fields with `null`
-     * or blank string values are intentionally ignored to prevent overwriting existing valid data
-     * with empty values.
+     * Updates specific fields in a user's Firestore document.
      *
-     * @param userId The unique identifier of the user whose data is to be updated.
-     * @param updatedData A [Map] containing the fields to be updated. The keys are the field names
-     * and the values are the new data.
-     * @throws Exception If an error occurs during the Firestore update operation, an [Exception] is thrown.
+     * @param userId The ID of the user whose data is to be updated.
+     * @param updatedData A map containing the fields to be updated.
+     *                    Fields with `null` or blank string values will be ignored.
+     * @throws Exception If there is an error during the update operation.
      */
     suspend fun updateUserData(userId: String, updatedData: Map<String, Any?>) {
         try {
-            // Filter out null or blank string values to avoid overwriting valid data
             val filteredData = updatedData.filterValues { value ->
                 value != null && !(value is String && value.isBlank())
             }
 
-            // If no valid data is left after filtering, exit without performing an update
             if (filteredData.isEmpty()) return
 
             mFireStore.collection("users")

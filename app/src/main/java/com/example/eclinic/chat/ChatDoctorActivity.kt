@@ -20,16 +20,6 @@ import com.example.eclinic.R
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 
-/**
- * Activity representing a chat interface between a doctor and a patient.
- *
- * Handles displaying chat messages, sending new messages, and listening for real-time updates
- * using Firebase Firestore and Firebase Authentication.
- *
- * The chat is identified by a unique chat ID generated from the current user's and patient's IDs.
- *
- * This activity also handles creating a new chat if it doesn't exist.
- */
 class ChatDoctorActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -49,18 +39,11 @@ class ChatDoctorActivity : AppCompatActivity() {
 
     private var chatListener: ListenerRegistration? = null
 
-    /**
-     * Initializes the activity, sets up UI components, Firebase instances,
-     * retrieves Intent extras, and starts or finds a chat session.
-     *
-     * @param savedInstanceState Bundle containing saved state, if any.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_chat_doctor)
 
-        // Adjust padding for system bars (status/navigation)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -70,7 +53,6 @@ class ChatDoctorActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        // Get current user ID or finish activity if unauthenticated
         currentUserId = auth.currentUser?.uid ?: run {
             Log.e("ChatDoctorActivity", "Current user ID is null. User not authenticated. Finishing activity.")
             Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show()
@@ -79,7 +61,6 @@ class ChatDoctorActivity : AppCompatActivity() {
         }
         Log.d("ChatDoctorActivity", "Current User ID (logged in): $currentUserId")
 
-        // Get patient ID and name from Intent extras, or finish if missing
         patientId = intent.getStringExtra("patientId") ?: run {
             Log.e("ChatDoctorActivity", "patientId not provided in Intent. Finishing activity.")
             Toast.makeText(this, "Error: Other chat participant ID missing.", Toast.LENGTH_SHORT).show()
@@ -113,12 +94,6 @@ class ChatDoctorActivity : AppCompatActivity() {
         findOrCreateChat()
     }
 
-    /**
-     * Finds an existing chat between the current user and patient or creates a new one if not found.
-     *
-     * Generates a unique chat ID by sorting the participants' IDs alphabetically.
-     * Listens for chat messages once the chat is found or created.
-     */
     private fun findOrCreateChat() {
         val participantsSorted = listOf(currentUserId, patientId).sorted()
         val generatedChatId = "${participantsSorted[0]}_${participantsSorted[1]}"
@@ -156,14 +131,6 @@ class ChatDoctorActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Sends a new chat message to the current chat.
-     *
-     * Updates the chat metadata with the latest message timestamp and text.
-     * If chat ID is not ready, attempts to find or create the chat again.
-     *
-     * @param text The message text to send.
-     */
     private fun sendMessage(text: String) {
         if (chatId == null) {
             Log.e("ChatDoctorActivity", "Chat ID is null, cannot send message. Re-finding chat...")
@@ -201,13 +168,6 @@ class ChatDoctorActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Starts listening for real-time updates of chat messages.
-     *
-     * Updates the message list and RecyclerView adapter when new messages arrive.
-     * Scrolls to the newest message.
-     * Handles errors by showing a Toast and logging.
-     */
     private fun listenForMessages() {
         if (chatId == null) {
             Log.e("ChatDoctorActivity", "Chat ID is null, cannot listen for messages. Waiting for chat to be found/created.")
@@ -252,9 +212,6 @@ class ChatDoctorActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Cleans up the Firestore listener when the activity is destroyed.
-     */
     override fun onDestroy() {
         super.onDestroy()
         chatListener?.remove()

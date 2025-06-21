@@ -16,18 +16,6 @@ import java.util.*
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-/**
- * Activity for doctors to manage their weekly schedule, including adding/editing available time slots
- * and viewing/canceling booked appointments.
- *
- * This activity allows doctors to:
- * - Display the selected date's available and booked time slots.
- * - Add or edit available time slots for the selected date using a [TimeSlotDialog].
- * - Navigate between days to view and manage schedules for different dates.
- * - View details of booked appointments and cancel them.
- *
- * It communicates with Firebase Firestore to store and retrieve time slot and appointment data.
- */
 class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlotListener {
 
     private lateinit var dateTitle: TextView
@@ -42,14 +30,6 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
     private lateinit var btnNextDay: Button
     private val db = FirebaseFirestore.getInstance()
 
-    /**
-     * Called when the activity is first created.
-     * Initializes UI components, retrieves the doctor ID and selected date from the intent,
-     * sets up click listeners for navigation and slot management, and loads initial data.
-     * @param savedInstanceState If the activity is being re-initialized after
-     * previously being shut down then this Bundle contains the data it most
-     * recently supplied in [onSaveInstanceState].
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weekly_schedule)
@@ -95,18 +75,11 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
     }
 
 
-    /**
-     * Updates the text of the [dateTitle] TextView to display the currently selected date.
-     */
     private fun updateDateTitle() {
         val formatter = SimpleDateFormat("EEEE, MMM dd", Locale.getDefault())
         dateTitle.text = formatter.format(selectedDate.time)
     }
 
-    /**
-     * Updates the [RecyclerView] displaying time slots with the current available and booked slots.
-     * Sets up the [TimeSlotDisplayAdapter] and its click listener for booked slots.
-     */
     private fun updateTimeSlots() {
         val adapter = TimeSlotDisplayAdapter(
             selectedSlots = selectedSlots,
@@ -118,22 +91,12 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
         recyclerView.adapter = adapter
     }
 
-    /**
-     * Callback method from [TimeSlotDialog.TimeSlotListener] when the user confirms
-     * their selection of time slots.
-     * Updates the [selectedSlots] and triggers an update of the UI and saving to Firebase.
-     * @param slots A [List] of selected time slot strings.
-     */
     override fun onSlotsSelected(slots: List<String>) {
         selectedSlots = slots
         updateTimeSlots()
         saveSlotsToFirebase()
     }
 
-    /**
-     * Saves the currently selected time slots for the [selectedDate] to Firebase Firestore.
-     * It uses [SetOptions.merge] to avoid overwriting existing data for other dates.
-     */
     private fun saveSlotsToFirebase() {
         val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
 
@@ -152,11 +115,6 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
 
     private var bookedSlots: List<String> = listOf()
 
-    /**
-     * Loads the available and booked time slots for the [selectedDate] from Firebase Firestore.
-     * Updates the [selectedSlots] and [bookedSlots] lists and then refreshes the UI.
-     * Also updates the text of [btnAddSlots] based on whether slots exist for the current day.
-     */
     private fun loadSlotsFromFirebase() {
         val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
 
@@ -183,23 +141,12 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
         }
     }
 
-    /**
-     * Changes the [selectedDate] by the given [offset] (in days).
-     * After changing the date, it updates the date title and reloads slots from Firebase.
-     * @param offset The number of days to change (e.g., -1 for previous day, 1 for next day).
-     */
     private fun changeDay(offset: Int) {
         selectedDate.add(Calendar.DAY_OF_MONTH, offset)
         updateDateTitle()
         loadSlotsFromFirebase()
     }
 
-    /**
-     * Displays an [AlertDialog] with information about a booked time slot.
-     * Fetches patient details and visit type from Firebase Firestore for the specified hour.
-     * Provides an option to cancel the appointment.
-     * @param hour The time string of the booked slot (e.g., "09:30").
-     */
     private fun showBookedSlotInfo(hour: String) {
         val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
 
@@ -237,11 +184,6 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
             }
     }
 
-    /**
-     * Cancels a confirmed appointment by deleting its document from the "confirmedAppointments" collection in Firestore.
-     * After successful cancellation, it refreshes the time slots displayed.
-     * @param appointmentDocId The document ID of the appointment to be canceled.
-     */
     private fun cancelAppointment(appointmentDocId: String) {
         db.collection("confirmedAppointments").document(appointmentDocId)
             .delete()

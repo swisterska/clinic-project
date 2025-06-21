@@ -12,12 +12,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.SetOptions
 
-/**
- * Activity that manages the visit types a doctor offers.
- *
- * Allows adding, editing, deleting, and displaying visit types with their associated prices.
- * Data is stored and retrieved from Firestore under the "visitTypes" collection keyed by doctor UID.
- */
 class DoctorVisitTypesActivity : AppCompatActivity() {
 
     private lateinit var visitNameEditText: EditText
@@ -30,15 +24,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    /**
-     * Called when the activity is starting.
-     *
-     * Initializes UI components, RecyclerView with adapter, and loads existing visit types.
-     * Sets up the add button to create new visit types when clicked.
-     *
-     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
-     * this Bundle contains the data it most recently supplied. Otherwise, it is null.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_doctor_visit_types)
@@ -55,6 +40,8 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
             { name -> deleteVisitType(name) }
         )
 
+
+
         visitsRecyclerView.layoutManager = LinearLayoutManager(this)
         visitsRecyclerView.adapter = adapter
 
@@ -69,13 +56,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
         loadVisitTypes()
     }
 
-    /**
-     * Adds or updates a visit type with the given name and price in Firestore.
-     * If the visit type document does not exist, creates it.
-     *
-     * @param name The name of the visit type.
-     * @param price The price associated with the visit type.
-     */
     private fun addVisitType(name: String, price: String) {
         val docRef = db.collection("visitTypes").document(uid)
         docRef.update(name, price)
@@ -85,17 +65,12 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
                 loadVisitTypes()
             }
             .addOnFailureListener {
-                // Create document if it does not exist
+                // Create if not exists
                 docRef.set(mapOf(name to price), SetOptions.merge())
                     .addOnSuccessListener { loadVisitTypes() }
             }
     }
 
-    /**
-     * Deletes the visit type with the specified name from Firestore.
-     *
-     * @param name The name of the visit type to delete.
-     */
     private fun deleteVisitType(name: String) {
         val updates = hashMapOf<String, Any>(
             name to com.google.firebase.firestore.FieldValue.delete()
@@ -105,11 +80,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
             .addOnSuccessListener { loadVisitTypes() }
     }
 
-    /**
-     * Loads all visit types for the current doctor from Firestore
-     * and updates the RecyclerView adapter with the retrieved data.
-     * Shows or hides a "no visits" message depending on data presence.
-     */
     private fun loadVisitTypes() {
         db.collection("visitTypes").document(uid)
             .get()
@@ -123,12 +93,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
             }
     }
 
-    /**
-     * Shows a dialog that allows the user to edit an existing visit type's name and price.
-     *
-     * @param oldName The current name of the visit type.
-     * @param oldPrice The current price of the visit type.
-     */
     private fun showEditDialog(oldName: String, oldPrice: String) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_visit_type, null)
         val nameEdit = dialogView.findViewById<EditText>(R.id.editVisitName)
@@ -155,14 +119,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    /**
-     * Updates a visit type in Firestore by deleting the old entry
-     * and adding a new one with the updated name and price.
-     *
-     * @param oldName The old name of the visit type to delete.
-     * @param newName The new name to add.
-     * @param newPrice The new price to associate with the visit type.
-     */
     private fun updateVisitType(oldName: String, newName: String, newPrice: String) {
         val docRef = db.collection("visitTypes").document(uid)
 
@@ -182,4 +138,6 @@ class DoctorVisitTypesActivity : AppCompatActivity() {
                 Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show()
             }
     }
+
+
 }
