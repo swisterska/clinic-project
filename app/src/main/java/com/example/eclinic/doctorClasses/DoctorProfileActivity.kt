@@ -13,6 +13,12 @@ import com.example.eclinic.patientClasses.PatientsListActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity that displays the profile information of the currently authenticated doctor.
+ *
+ * Retrieves doctor details from Firestore and displays them in the UI.
+ * Allows the doctor to navigate to the profile edit screen or logout.
+ */
 class DoctorProfileActivity : AppCompatActivity() {
 
     private lateinit var firestore: FirebaseFirestore
@@ -30,6 +36,15 @@ class DoctorProfileActivity : AppCompatActivity() {
     private lateinit var editProfileButton: Button
     private lateinit var logoutButton: Button
 
+    /**
+     * Called when the activity is starting.
+     *
+     * Initializes Firebase instances, UI components, and loads the doctor's profile data from Firestore.
+     * Sets up click listeners for editing profile and logging out.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     * this Bundle contains the data it most recently supplied. Otherwise, it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile_doc)
@@ -87,11 +102,17 @@ class DoctorProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "User ID not found. Please log in again.", Toast.LENGTH_LONG).show()
         }
 
+        /**
+         * Opens the EditDoctorProfileActivity when the edit profile button is clicked.
+         */
         editProfileButton.setOnClickListener {
             val intent = Intent(this, EditDoctorProfileActivity::class.java)
             startActivity(intent)
         }
 
+        /**
+         * Signs out the user and navigates back to the login screen when the logout button is clicked.
+         */
         logoutButton.setOnClickListener {
             auth.signOut()
             val intent = Intent(this, com.example.eclinic.logRegClasses.LoginActivity::class.java)

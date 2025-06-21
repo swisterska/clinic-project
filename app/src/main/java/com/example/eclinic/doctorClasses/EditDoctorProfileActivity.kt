@@ -12,6 +12,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 
+/**
+ * Activity to edit and update the doctor's profile details.
+ *
+ * Allows the doctor to view and modify their personal information,
+ * such as name, email, phone, specialization, title, workplace, bio, and PWZ number.
+ * Also provides navigation to change password and to edit offered visit types.
+ */
 class EditDoctorProfileActivity : AppCompatActivity() {
 
     private lateinit var firestore: FirebaseFirestore
@@ -30,6 +37,16 @@ class EditDoctorProfileActivity : AppCompatActivity() {
     private lateinit var editOfferButton: Button
     private lateinit var changePasswordButton: Button
 
+    /**
+     * Called when the activity is starting.
+     *
+     * Initializes UI elements, fetches current doctor's data from Firestore,
+     * populates the form fields, and sets click listeners for saving changes,
+     * editing offered services, and changing the password.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down,
+     * this Bundle contains the data it most recently supplied. Otherwise it is null.
+     */
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +55,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+        // Bind views
         firstNameEditText = findViewById(R.id.editDoctorFirstName)
         lastNameEditText = findViewById(R.id.editDoctorLastName)
         emailEditText = findViewById(R.id.editDoctorEmail)
@@ -51,6 +69,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
         editOfferButton = findViewById(R.id.EditYourServicesButton)
         changePasswordButton = findViewById(R.id.changePasswordButton)
 
+        // Open Change Password activity on button click
         changePasswordButton.setOnClickListener {
             val intent = Intent(this, ChangeDoctorPasswordActivity::class.java)
             startActivity(intent)
@@ -58,6 +77,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
 
         val userId = auth.currentUser?.uid
 
+        // Load the current doctor's profile data from Firestore
         if (userId != null) {
             val docRef = firestore.collection("users").document(userId)
             docRef.get().addOnSuccessListener { document ->
@@ -75,6 +95,7 @@ class EditDoctorProfileActivity : AppCompatActivity() {
             }
         }
 
+        // Save updated profile data to Firestore
         saveButton.setOnClickListener {
             val updatedData = hashMapOf(
                 "firstName" to firstNameEditText.text.toString(),
@@ -93,18 +114,19 @@ class EditDoctorProfileActivity : AppCompatActivity() {
                     .set(updatedData, SetOptions.merge())
                     .addOnSuccessListener {
                         Toast.makeText(this, "Profile updated", Toast.LENGTH_SHORT).show()
-                        finish()
+                        finish() // Close activity after saving
                     }
                     .addOnFailureListener {
                         Toast.makeText(this, "Failed to update profile", Toast.LENGTH_SHORT).show()
                     }
             }
         }
+
+        // Navigate to visit types editing screen
         editOfferButton.setOnClickListener {
             val intent = Intent(this, DoctorVisitTypesActivity::class.java)
             intent.putExtra("userId", userId)
             startActivity(intent)
         }
-
     }
 }

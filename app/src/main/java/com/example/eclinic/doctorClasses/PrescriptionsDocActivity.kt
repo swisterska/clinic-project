@@ -26,6 +26,12 @@ import com.example.eclinic.chat.ChatUtils
 import com.google.firebase.firestore.FieldValue
 
 
+/**
+ * Activity for doctors to generate and manage patient prescriptions.
+ * This activity allows doctors to select a patient, input medication details,
+ * generate a PDF prescription, upload it to Firebase Storage, and save its
+ * details to Firestore. It also sends a chat message to the patient about the new prescription.
+ */
 class PrescriptionsDocActivity : AppCompatActivity() {
 
     private lateinit var patientSpinner: Spinner
@@ -40,6 +46,13 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     private val storage = FirebaseStorage.getInstance()
     private val patientMap = mutableMapOf<String, String>() // name -> id
 
+    /**
+     * Called when the activity is first created.
+     * Initializes UI elements, loads patient data, and sets up click listeners.
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in [onSaveInstanceState].
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_prescriptions_doc)
@@ -58,6 +71,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Loads the list of patients associated with the current doctor from Firestore.
+     * Populates the patient spinner with the names of these patients.
+     */
     private fun loadPatients() {
         val doctorId = auth.currentUser?.uid ?: return
 
@@ -97,6 +114,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Retrieves the current doctor's name from Firestore.
+     * @param onResult A callback function that will be invoked with the doctor's full name.
+     */
     private fun getDoctorName(onResult: (String) -> Unit) {
         val doctorId = auth.currentUser?.uid ?: return
 
@@ -114,6 +135,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Gathers prescription details from the UI, generates a PDF, and uploads it to Firebase.
+     * It performs input validation before proceeding.
+     */
     private fun generateAndUploadPrescription() {
         val selectedPatientName = patientSpinner.selectedItem?.toString() ?: return
         val patientId = patientMap[selectedPatientName] ?: return
@@ -151,6 +176,17 @@ class PrescriptionsDocActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Generates a styled PDF document containing the prescription details.
+     * The PDF includes patient name, medication, dosage, units, comments, and doctor's name.
+     * @param file The file to which the PDF will be written.
+     * @param patientName The full name of the patient.
+     * @param medication The name of the medication.
+     * @param dosage The dosage of the medication.
+     * @param units The units of the dosage (e.g., "mg", "ml").
+     * @param comments Any additional comments or instructions for the prescription.
+     * @param doctorName The full name of the prescribing doctor.
+     */
     private fun generateStyledPdf(
         file: File,
         patientName: String,
@@ -237,7 +273,7 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             isAntiAlias = true
             textSkewX = -0.25f
         }
-        val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+        val sdf = SimpleDateFormat("dd MMM YYYY", Locale.getDefault())
         val dateText = "Date: ${sdf.format(Date())}"
 
         canvas.drawText(dateText, margin.toFloat(), yPosition, footerPaint)
@@ -251,6 +287,13 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Uploads the generated PDF prescription to Firebase Storage.
+     * Upon successful upload, it retrieves the download URL and saves the prescription details to Firestore.
+     * @param file The PDF file to be uploaded.
+     * @param doctorId The ID of the doctor who issued the prescription.
+     * @param patientId The ID of the patient for whom the prescription is issued.
+     */
     private fun uploadPdfToFirebase(file: File, doctorId: String, patientId: String) {
         val storageRef = storage.reference.child("prescriptions/${file.name}")
         val uri = Uri.fromFile(file)
@@ -268,6 +311,13 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Saves the prescription details, including its Firebase Storage URL, to Firestore.
+     * After saving, it sends a chat message to the patient informing them about the new prescription.
+     * @param url The download URL of the uploaded PDF prescription.
+     * @param doctorId The ID of the doctor who issued the prescription.
+     * @param patientId The ID of the patient for whom the prescription is issued.
+     */
     private fun savePrescriptionToFirestore(url: String, doctorId: String, patientId: String) {
         val prescriptionData = mapOf(
             "doctorId" to doctorId,
@@ -296,6 +346,9 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * Clears the input fields and resets the patient spinner selection after a prescription has been submitted.
+     */
     private fun clearInputs() {
         medicationName.text?.clear()
         dosage.text?.clear()
@@ -304,6 +357,12 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         patientSpinner.setSelection(0)
     }
 //companion object {
+//    /**
+//     * Sends a chat message from the current user (doctor) to a specified patient.
+//     * If a chat between these participants doesn't exist, it creates a new chat document.
+//     * @param patientId The ID of the patient to send the message to.
+//     * @param messageText The content of the message to be sent.
+//     */
 //    fun sendChatMessageToPatient(patientId: String, messageText: String) {
 //        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 //        val firestore = FirebaseFirestore.getInstance()

@@ -12,6 +12,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.storage.FirebaseStorage
 
+/**
+ * Activity that allows a doctor user to change their account password.
+ *
+ * It displays the profile image and provides input fields for the old password,
+ * new password, and confirmation of the new password.
+ * Handles password validation and updates the password in Firebase Authentication.
+ */
 class ChangeDoctorPasswordActivity : AppCompatActivity() {
 
     private lateinit var profileImageView: ImageView
@@ -23,6 +30,15 @@ class ChangeDoctorPasswordActivity : AppCompatActivity() {
     private var currentUser: FirebaseUser? = null
     private val storage = FirebaseStorage.getInstance()
 
+    /**
+     * Called when the activity is first created.
+     * Initializes views, loads the user's profile image from Firebase Storage,
+     * and sets up the password change button click listener.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down, this Bundle contains the data it most recently supplied.
+     * Otherwise, it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_doctor_password)
@@ -36,8 +52,8 @@ class ChangeDoctorPasswordActivity : AppCompatActivity() {
         confirmNewPasswordEditText = findViewById(R.id.confirmNewPasswordEditText)
         saveNewPasswordButton = findViewById(R.id.saveNewPasswordButton)
 
-        // Load profile image (you might need to adjust this based on how you store it)
-        val profilePictureRef = storage.reference.child("users/${currentUser?.uid}/profile.jpg") // Example path
+        // Load profile image from Firebase Storage (example path used)
+        val profilePictureRef = storage.reference.child("users/${currentUser?.uid}/profile.jpg")
         profilePictureRef.downloadUrl.addOnSuccessListener { uri ->
             Glide.with(this)
                 .load(uri)
@@ -45,8 +61,10 @@ class ChangeDoctorPasswordActivity : AppCompatActivity() {
                 .error(R.drawable.applogo)
                 .into(profileImageView)
         }.addOnFailureListener {
+            // Optional: Handle failure to load image if needed
         }
 
+        // Set click listener to validate input and update password
         saveNewPasswordButton.setOnClickListener {
             val oldPassword = oldPasswordEditText.text.toString()
             val newPassword = newPasswordEditText.text.toString()
@@ -67,11 +85,12 @@ class ChangeDoctorPasswordActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Update password in Firebase Authentication
             currentUser?.updatePassword(newPassword)
                 ?.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(this, "Password has been changed", Toast.LENGTH_SHORT).show()
-                        finish() // Go back to the edit profile screen
+                        finish() // Close this activity and return
                     } else {
                         Toast.makeText(this, "Failed to change password: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }

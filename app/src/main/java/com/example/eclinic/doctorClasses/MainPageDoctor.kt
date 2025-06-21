@@ -18,6 +18,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Main page activity for doctors.
+ *
+ * Displays a welcome message with the doctor's first name,
+ * shows the list of today's confirmed visits,
+ * and provides navigation to chat with patients, prescriptions, calendar, and profile.
+ */
 class MainPageDoctor : AppCompatActivity() {
 
     private lateinit var welcomeText: TextView
@@ -30,6 +37,15 @@ class MainPageDoctor : AppCompatActivity() {
 
     private var userId: String? = null
 
+    /**
+     * Called when the activity is starting.
+     *
+     * Initializes views, fetches the current user's ID and loads their profile name,
+     * loads today's visits for the doctor,
+     * and sets up bottom navigation item listeners.
+     *
+     * @param savedInstanceState Bundle containing the activity's previously saved state.
+     */
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +62,7 @@ class MainPageDoctor : AppCompatActivity() {
         val userId = auth.currentUser?.uid
 
         if (userId != null) {
+            // Fetch doctor's first name to display welcome message
             firestore.collection("users").document(userId).get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
@@ -91,11 +108,24 @@ class MainPageDoctor : AppCompatActivity() {
         rvTodayVisits.layoutManager = LinearLayoutManager(this)
     }
 
+    /**
+     * Called after the activity has been resumed.
+     *
+     * Reloads today's visits to ensure the displayed list is up to date.
+     */
     override fun onResume() {
         super.onResume()
-        userId?.let { fetchTodayVisitsForDoctor(it) }  // <-- przeładowuje wizyty przy każdym wejściu
+        userId?.let { fetchTodayVisitsForDoctor(it) }  // Reload visits on each resume
     }
 
+    /**
+     * Fetches confirmed visits for today for the given doctor.
+     *
+     * Queries Firestore for confirmed appointments for the specified doctor on the current date,
+     * retrieves patient names for each visit, and populates the RecyclerView adapter.
+     *
+     * @param doctorId The UID of the doctor for whom to fetch visits.
+     */
     private fun fetchTodayVisitsForDoctor(doctorId: String) {
         val db = FirebaseFirestore.getInstance()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -131,7 +161,6 @@ class MainPageDoctor : AppCompatActivity() {
                             val firstName = patientDoc.getString("firstName") ?: ""
                             val lastName = patientDoc.getString("lastName") ?: ""
                             val patientName = "$firstName $lastName".trim()
-
 
                             visits.add(VisitItem(parsedDate, hour, type, patientName, documentId, price))
                         }

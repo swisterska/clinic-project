@@ -14,9 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
 import com.example.eclinic.patientClasses.EditProfileActivity
 import com.example.eclinic.patientClasses.Patient
-import com.example.eclinic.adminClasses.PatientAdapterAdmin
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity that allows administrators to view, edit, and delete patient accounts.
+ *
+ * Patients are fetched from the Firestore database and displayed in a RecyclerView.
+ * Administrators can modify or delete patient information directly from this screen.
+ */
 class AdminPatientsListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -26,6 +31,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
     private val patientList = mutableListOf<Patient>()
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Called when the activity is first created.
+     * Initializes UI elements, sets up the RecyclerView and adapter,
+     * and fetches patient data from Firestore.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_patients_list)
@@ -40,11 +50,15 @@ class AdminPatientsListActivity : AppCompatActivity() {
             onDeleteClick = { patient -> confirmDeletePatient(patient) }
         )
         recyclerView.adapter = patientAdapter
-        recyclerView.adapter = patientAdapter
 
         fetchPatients()
     }
 
+    /**
+     * Fetches all users with the role "PATIENT" from Firestore.
+     * Updates the RecyclerView with the fetched list.
+     * Displays a message if no patients are found.
+     */
     private fun fetchPatients() {
         db.collection("users")
             .whereEqualTo("role", "PATIENT")
@@ -64,6 +78,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Opens a dialog allowing the admin to edit a patient's details.
+     *
+     * @param patient The patient whose information is to be edited.
+     */
     private fun showEditPatientDialog(patient: Patient) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_patient, null)
         val firstNameInput = dialogView.findViewById<EditText>(R.id.editFirstName)
@@ -89,6 +108,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Saves changes made to a patient's profile in Firestore.
+     *
+     * @param patient The updated patient data to be saved.
+     */
     private fun savePatientChanges(patient: Patient) {
         if (patient.uid == null) {
             Toast.makeText(this, "Invalid patient ID", Toast.LENGTH_SHORT).show()
@@ -111,7 +135,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Launches the EditProfileActivity for the given patient.
+     *
+     * @param patient The patient whose profile is to be edited.
+     */
     private fun openEditPatientProfile(patient: Patient) {
         val intent = Intent(this, EditProfileActivity::class.java).apply {
             putExtra("patientId", patient.uid)
@@ -119,6 +147,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Shows a confirmation dialog to delete the specified patient.
+     *
+     * @param patient The patient to confirm deletion for.
+     */
     private fun confirmDeletePatient(patient: Patient) {
         AlertDialog.Builder(this)
             .setTitle("Delete Patient")
@@ -128,6 +161,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Deletes the specified patient from Firestore.
+     *
+     * @param patient The patient to be deleted.
+     */
     private fun deletePatient(patient: Patient) {
         if (patient.uid == null) {
             Toast.makeText(this, "Invalid patient ID", Toast.LENGTH_SHORT).show()
