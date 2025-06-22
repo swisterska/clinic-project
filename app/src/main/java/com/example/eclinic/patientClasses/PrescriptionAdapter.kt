@@ -17,24 +17,40 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/**
+ * Adapter for displaying a list of prescriptions in a RecyclerView.
+ *
+ * @param prescriptions List of prescriptions to display.
+ * @param onClick Callback invoked when a prescription item is clicked.
+ */
 class PrescriptionAdapter(
     private val prescriptions: List<Prescription>,
     private val onClick: (Prescription) -> Unit
 ) : RecyclerView.Adapter<PrescriptionAdapter.ViewHolder>() {
 
+    /**
+     * ViewHolder representing individual prescription items.
+     */
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val medicationName: TextView = itemView.findViewById(R.id.medicationName)
         val date: TextView = itemView.findViewById(R.id.prescriptionDate)
         val qrCodeIcon: ImageView = itemView.findViewById(R.id.qrCodeIcon)
-
     }
 
+    /**
+     * Inflates the item layout and creates the ViewHolder.
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_prescription, parent, false)
         return ViewHolder(view)
     }
 
+    /**
+     * Binds prescription data to the ViewHolder.
+     * Fetches doctor's last name from Firestore to display with the prescription.
+     * Sets click listeners for item and QR code icon.
+     */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val prescription = prescriptions[position]
         val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
@@ -61,9 +77,18 @@ class PrescriptionAdapter(
         }
     }
 
+    /**
+     * Returns the total number of prescriptions.
+     */
     override fun getItemCount(): Int = prescriptions.size
 }
 
+/**
+ * Displays a dialog showing a QR code representing the prescription URL.
+ *
+ * @param context Context to build the dialog.
+ * @param prescription The prescription containing the URL to encode.
+ */
 private fun showQrCodeDialog(context: Context, prescription: Prescription) {
     val qrData = prescription.url ?: return
 

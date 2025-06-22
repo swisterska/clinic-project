@@ -8,8 +8,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
 
+/**
+ * DialogFragment for selecting time slots from a predefined list.
+ * Allows multi-selection of 30-minute time slots between 08:00 and 18:00.
+ */
 class TimeSlotDialog : DialogFragment() {
 
+    /**
+     * Listener interface to receive selected time slots.
+     */
     interface TimeSlotListener {
         fun onSlotsSelected(slots: List<String>)
     }
@@ -17,11 +24,20 @@ class TimeSlotDialog : DialogFragment() {
     private lateinit var timeSlotAdapter: TimeSlotAdapter
     private var initialSelection: List<String> = emptyList()
 
+    /**
+     * Initializes the dialog with pre-selected time slots passed via arguments.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initialSelection = arguments?.getStringArrayList(ARG_SLOTS)?.toList() ?: emptyList()
     }
 
+    /**
+     * Creates and returns the dialog UI with a list of selectable time slots.
+     *
+     * @param savedInstanceState Previously saved state, if any.
+     * @return The constructed Dialog object.
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireContext())
         val view = requireActivity().layoutInflater.inflate(R.layout.dialog_time_slots, null)
@@ -44,6 +60,11 @@ class TimeSlotDialog : DialogFragment() {
         return builder.create()
     }
 
+    /**
+     * Generates a list of time slots in 30-minute intervals from 08:00 to 18:00.
+     *
+     * @return A list of formatted time strings (e.g., "08:00", "08:30").
+     */
     private fun generateTimeSlots(): List<String> {
         val slots = mutableListOf<String>()
         var hour = 8
@@ -64,6 +85,12 @@ class TimeSlotDialog : DialogFragment() {
     companion object {
         private const val ARG_SLOTS = "selected_slots"
 
+        /**
+         * Factory method for creating a new instance of TimeSlotDialog with selected slots.
+         *
+         * @param selectedSlots List of initially selected time slot strings.
+         * @return A configured instance of TimeSlotDialog.
+         */
         fun newInstance(selectedSlots: List<String>): TimeSlotDialog {
             val args = Bundle().apply {
                 putStringArrayList(ARG_SLOTS, ArrayList(selectedSlots))

@@ -1,10 +1,21 @@
 package com.example.eclinic.firebase
 
+/**
+ * Data class representing a type of visit offered by a doctor.
+ *
+ * @property name The name or description of the visit type (e.g., "Online Chat Consultation", "EKG").
+ * @property price The price of the visit, typically including the currency (e.g., "70 PLN").
+ */
 data class Visit(
     val name: String,
     val price: String
 )
 
+/**
+ * A read-only map associating [Specialization] enum entries with a list of default [Visit] types
+ * and their prices. This map provides a predefined set of services and their costs
+ * for various medical specializations.
+ */
 val visitsBySpecialization = mapOf(
     Specialization.CARDIOLOGIST to listOf(
         Visit("Online Chat Consultation", "70 PLN"),
@@ -148,5 +159,3 @@ val visitsBySpecialization = mapOf(
         Visit("Diagnostic Mystery Session", "1200 PLN")
     )
 )
-
-

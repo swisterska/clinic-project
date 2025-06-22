@@ -17,6 +17,11 @@ import com.example.eclinic.patientClasses.Patient
 import com.example.eclinic.adminClasses.PatientAdapterAdmin
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity for administrators to view, edit, and delete patient profiles.
+ * This activity displays a list of patients fetched from Firestore and provides
+ * functionalities to manage their information.
+ */
 class AdminPatientsListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -26,6 +31,13 @@ class AdminPatientsListActivity : AppCompatActivity() {
     private val patientList = mutableListOf<Patient>()
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Called when the activity is first created.
+     * Initializes the UI components, sets up the RecyclerView, and fetches the patient data.
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in [onSaveInstanceState].  Otherwise it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_patients_list)
@@ -45,6 +57,12 @@ class AdminPatientsListActivity : AppCompatActivity() {
         fetchPatients()
     }
 
+    /**
+     * Fetches the list of patients from the Firestore database.
+     * Only users with the role "PATIENT" are retrieved.
+     * The fetched data updates the [patientList] and notifies the [patientAdapter].
+     * Displays a message if no patients are found or a Toast on failure.
+     */
     private fun fetchPatients() {
         db.collection("users")
             .whereEqualTo("role", "PATIENT")
@@ -64,6 +82,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Displays an AlertDialog to edit the details of a selected patient.
+     * The dialog pre-fills the patient's current first name, last name, and email.
+     * @param patient The [Patient] object whose details are to be edited.
+     */
     private fun showEditPatientDialog(patient: Patient) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_patient, null)
         val firstNameInput = dialogView.findViewById<EditText>(R.id.editFirstName)
@@ -89,6 +112,10 @@ class AdminPatientsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Saves the changes made to a patient's profile to the Firestore database.
+     * @param patient The [Patient] object with the updated information.
+     */
     private fun savePatientChanges(patient: Patient) {
         if (patient.uid == null) {
             Toast.makeText(this, "Invalid patient ID", Toast.LENGTH_SHORT).show()
@@ -111,7 +138,11 @@ class AdminPatientsListActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Opens the [EditProfileActivity] for a given patient.
+     * This method is currently not directly used in the provided code but could be for a separate edit flow.
+     * @param patient The [Patient] object whose profile is to be edited.
+     */
     private fun openEditPatientProfile(patient: Patient) {
         val intent = Intent(this, EditProfileActivity::class.java).apply {
             putExtra("patientId", patient.uid)
@@ -119,6 +150,10 @@ class AdminPatientsListActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Displays an AlertDialog to confirm the deletion of a patient's profile.
+     * @param patient The [Patient] object to be deleted.
+     */
     private fun confirmDeletePatient(patient: Patient) {
         AlertDialog.Builder(this)
             .setTitle("Delete Patient")
@@ -128,6 +163,10 @@ class AdminPatientsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Deletes a patient's profile from the Firestore database.
+     * @param patient The [Patient] object to be deleted.
+     */
     private fun deletePatient(patient: Patient) {
         if (patient.uid == null) {
             Toast.makeText(this, "Invalid patient ID", Toast.LENGTH_SHORT).show()

@@ -12,6 +12,10 @@ import com.example.eclinic.doctorClasses.Doctor
 import com.example.eclinic.patientClasses.DoctorAdapter
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity for administrators to view the calendar of verified doctors.
+ * Displays a list of verified doctors and allows opening individual calendars.
+ */
 class AdminCalendarActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -20,6 +24,10 @@ class AdminCalendarActivity : AppCompatActivity() {
     private val doctorList = mutableListOf<Doctor>()
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Called when the activity is starting.
+     * Sets up the UI components and fetches the list of doctors.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_calendar)
@@ -37,6 +45,9 @@ class AdminCalendarActivity : AppCompatActivity() {
         fetchDoctors()
     }
 
+    /**
+     * Fetches the list of verified doctors from Firestore and updates the RecyclerView.
+     */
     private fun fetchDoctors() {
         db.collection("users")
             .whereEqualTo("role", "DOCTOR")
@@ -52,6 +63,11 @@ class AdminCalendarActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Opens the selected doctor's calendar.
+     *
+     * @param doctor The doctor whose calendar should be opened.
+     */
     private fun openDoctorCalendar(doctor: Doctor) {
         doctor.uid?.let { uid ->
             val intent = Intent(this, MainCalendarActivity::class.java)

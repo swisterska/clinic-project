@@ -16,6 +16,11 @@ import com.example.eclinic.logRegClasses.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity that displays the user's profile information.
+ * It loads profile data from Firestore and allows the user
+ * to edit the profile or log out.
+ */
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var profile: ImageView
@@ -32,16 +37,22 @@ class ProfileActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val currentUser = auth.currentUser
 
+    /**
+     * Initializes the activity, sets up UI elements,
+     * listeners and loads user profile data.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
 
+        // Adjust padding to system bars using insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         profile = findViewById(R.id.profile)
         usernameText = findViewById(R.id.profileUsername)
         nameText = findViewById(R.id.profileName)
@@ -52,10 +63,12 @@ class ProfileActivity : AppCompatActivity() {
         editProfileButton = findViewById(R.id.editProfileButton)
         logoutButton = findViewById(R.id.logoutButton)
 
+        // Navigate to EditProfileActivity when edit button clicked
         editProfileButton.setOnClickListener {
             startActivity(Intent(this, EditProfileActivity::class.java))
         }
 
+        // Log out and navigate to LoginActivity on logout button click
         logoutButton.setOnClickListener {
             auth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))
@@ -65,6 +78,10 @@ class ProfileActivity : AppCompatActivity() {
         loadUserProfile()
     }
 
+    /**
+     * Loads user profile data from Firestore and updates UI.
+     * Displays Toast messages on failure or if data not found.
+     */
     private fun loadUserProfile() {
         val userId = currentUser?.uid ?: return
 

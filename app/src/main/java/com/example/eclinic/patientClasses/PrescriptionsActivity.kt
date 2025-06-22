@@ -9,13 +9,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import android.app.AlertDialog
-import android.content.Context
-import android.graphics.Bitmap
-import android.widget.ImageView
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.WriterException
-import com.journeyapps.barcodescanner.BarcodeEncoder
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
@@ -24,6 +17,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
+/**
+ * Activity responsible for displaying a list of prescriptions for the current patient.
+ * Fetches prescriptions from Firestore and shows them in a RecyclerView.
+ * Allows opening prescription PDFs in external PDF viewer apps.
+ */
 class PrescriptionsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -34,6 +32,9 @@ class PrescriptionsActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val prescriptionList = mutableListOf<Prescription>()
 
+    /**
+     * Initializes the activity, sets up the UI and triggers loading of prescriptions.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_prescription)
@@ -47,6 +48,10 @@ class PrescriptionsActivity : AppCompatActivity() {
         loadPrescriptions()
     }
 
+    /**
+     * Loads prescriptions for the currently authenticated user from Firestore,
+     * updating the UI depending on success or failure.
+     */
     private fun loadPrescriptions() {
         val patientId = auth.currentUser?.uid ?: return
 
@@ -88,7 +93,12 @@ class PrescriptionsActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Attempts to open a PDF file from the given URL using an external PDF viewer.
+     * Shows a Toast if no suitable viewer app is installed.
+     *
+     * @param url The URL to the PDF file to open.
+     */
     private fun openPdf(url: String) {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(Uri.parse(url), "application/pdf")
@@ -100,6 +110,4 @@ class PrescriptionsActivity : AppCompatActivity() {
             Toast.makeText(this, "No PDF viewer installed", Toast.LENGTH_SHORT).show()
         }
     }
-
-
 }

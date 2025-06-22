@@ -16,6 +16,10 @@ import com.example.eclinic.firebase.Role
 import com.example.eclinic.firebase.Specialization
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity that allows a patient to register for an appointment by selecting a doctor.
+ * Enables filtering doctors by specialization and searching by name.
+ */
 class RegisterForAppointmentPatient : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -28,6 +32,9 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
     private var fullDoctorList = listOf<Doctor>()
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Initializes views, adapter, filter settings, and starts fetching the list of doctors.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_for_appointment_patient)
@@ -58,6 +65,10 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
         fetchDoctorsFromFirestore(null)
     }
 
+    /**
+     * Sets up the spinner for selecting doctor specializations.
+     * Selection triggers fetching the list of doctors with the selected specialization.
+     */
     private fun setupSpecializationFilter() {
         val specializations = listOf("All") + Specialization.entries.map { it.displayName }
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, specializations)
@@ -74,6 +85,10 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets up a listener on the search input to filter doctors based on the entered text.
+     * Searching matches full names and allows minor typos (up to 2 edits).
+     */
     private fun setupSearchListener() {
         searchInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
@@ -95,6 +110,12 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
         })
     }
 
+    /**
+     * Fetches the list of doctors from Firestore, optionally filtering by specialization.
+     * Updates the list and adapter after data retrieval.
+     *
+     * @param specialization specialization to filter by or null to fetch all doctors
+     */
     private fun fetchDoctorsFromFirestore(specialization: String?) {
         var query = db.collection("users")
             .whereEqualTo("role", Role.DOCTOR.name)
@@ -124,6 +145,11 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
             }
     }
 
+    /**
+     * Shows a dialog with additional information about the selected doctor.
+     *
+     * @param doctor the doctor whose details will be shown
+     */
     private fun showDoctorInfoDialog(doctor: Doctor) {
         val builder = androidx.appcompat.app.AlertDialog.Builder(this)
         builder.setTitle("${doctor.firstName} ${doctor.lastName}")
@@ -138,6 +164,14 @@ class RegisterForAppointmentPatient : AppCompatActivity() {
         builder.show()
     }
 
+    /**
+     * Calculates the number of differences (edit distance) between two strings using the Levenshtein algorithm.
+     * Used to allow minor typos in doctor name searches.
+     *
+     * @param a first string
+     * @param b second string
+     * @return number of edit operations required to change a into b
+     */
     private fun typos(a: String, b: String): Int {
         val dp = Array(a.length + 1) { IntArray(b.length + 1) }
         for (i in 0..a.length) dp[i][0] = i

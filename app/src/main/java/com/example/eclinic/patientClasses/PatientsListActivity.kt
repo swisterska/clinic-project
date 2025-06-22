@@ -14,6 +14,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 
+/**
+ * Activity to display a list of patients that the current user has active chat conversations with.
+ * Loads conversations from Firestore, retrieves patient details, and opens chat on selection.
+ */
 class PatientsListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -55,6 +59,10 @@ class PatientsListActivity : AppCompatActivity() {
         fetchConversations()
     }
 
+    /**
+     * Fetches all chat conversations involving the current user, extracts the other participant's ID,
+     * loads their user details as Patient objects, and updates the RecyclerView.
+     */
     private fun fetchConversations() {
         Log.d("PatientsListActivity", "Attempting to fetch conversations for user: $currentUserId")
 

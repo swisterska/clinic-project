@@ -15,14 +15,24 @@ import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Admin main dashboard activity.
+ * Allows viewing and verifying unverified doctors,
+ * adding new doctors manually, and navigating between admin features.
+ */
 class AdminMainPage : AppCompatActivity() {
 
     private lateinit var layoutContainer: LinearLayout
     private lateinit var btnAddDoctor: MaterialButton
     private lateinit var btnLogout: ImageButton
+
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    /**
+     * Called when the activity is first created.
+     * Sets up UI components, listeners, and loads unverified doctors.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_main_page)
@@ -37,7 +47,7 @@ class AdminMainPage : AppCompatActivity() {
             showAddDoctorDialog()
         }
 
-        btnLogout.setOnClickListener{
+        btnLogout.setOnClickListener {
             auth.signOut()
             val intent = Intent(this, com.example.eclinic.logRegClasses.LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -45,21 +55,19 @@ class AdminMainPage : AppCompatActivity() {
             finish()
         }
 
+        // Set up bottom navigation
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_manage_doctors -> {
-                    // Start AdminDoctorsListActivity
                     startActivity(Intent(this, AdminDoctorsListActivity::class.java))
                     true
                 }
                 R.id.menu_manage_schedules -> {
-                    // Start AdminCalendarActivity
                     startActivity(Intent(this, AdminCalendarActivity::class.java))
                     true
                 }
                 R.id.menu_manage_patients -> {
-                    // Start AdminPatientsListActivity
                     startActivity(Intent(this, AdminPatientsListActivity::class.java))
                     true
                 }
@@ -68,8 +76,10 @@ class AdminMainPage : AppCompatActivity() {
         }
     }
 
-
-
+    /**
+     * Retrieves a list of doctors who are not yet verified.
+     * Displays each unverified doctor in a card with Verify/Reject options.
+     */
     private fun fetchUnverifiedDoctors() {
         layoutContainer.removeAllViews()
 
@@ -94,7 +104,7 @@ class AdminMainPage : AppCompatActivity() {
                     val surname = doc.getString("lastName") ?: ""
                     val specialization = doc.getString("specialization") ?: "Not Specified"
 
-                    // Create card dynamically
+                    // Inflate and populate doctor card view
                     val card = layoutInflater.inflate(R.layout.doctor_card_item, layoutContainer, false)
 
                     val doctorName = card.findViewById<TextView>(R.id.doctorName)
@@ -116,6 +126,10 @@ class AdminMainPage : AppCompatActivity() {
             }
     }
 
+    /**
+     * Marks a doctor as verified in Firestore.
+     * @param doctorId The Firestore document ID of the doctor.
+     */
     private fun verifyDoctor(doctorId: String) {
         db.collection("users")
             .document(doctorId)
@@ -129,6 +143,10 @@ class AdminMainPage : AppCompatActivity() {
             }
     }
 
+    /**
+     * Deletes a doctor from Firestore.
+     * @param doctorId The Firestore document ID of the doctor.
+     */
     private fun rejectDoctor(doctorId: String) {
         db.collection("users")
             .document(doctorId)
@@ -142,6 +160,10 @@ class AdminMainPage : AppCompatActivity() {
             }
     }
 
+    /**
+     * Displays a dialog for the admin to manually add a new doctor.
+     * Includes inputs for all necessary fields.
+     */
     private fun showAddDoctorDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_doctor, null)
         val nameField = dialogView.findViewById<EditText>(R.id.inputName)
@@ -185,7 +207,16 @@ class AdminMainPage : AppCompatActivity() {
         )
     }
 
-
+    /**
+     * Registers a new doctor account using Firebase Authentication and stores profile in Firestore.
+     *
+     * @param name First name
+     * @param surname Last name
+     * @param email Email address
+     * @param phone Phone number
+     * @param password Password
+     * @param specialization Doctor's specialty
+     */
     private fun addDoctor(
         name: String,
         surname: String,
@@ -225,8 +256,5 @@ class AdminMainPage : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to create doctor account.", Toast.LENGTH_SHORT).show()
             }
-
-
     }
 }
-

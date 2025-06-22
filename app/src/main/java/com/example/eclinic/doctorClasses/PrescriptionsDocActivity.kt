@@ -40,6 +40,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
     private val storage = FirebaseStorage.getInstance()
     private val patientMap = mutableMapOf<String, String>() // name -> id
 
+    /**
+     * Called when the activity is first created.
+     * Initializes the UI components and loads patients data.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_prescriptions_doc)
@@ -58,6 +62,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Loads the list of patients who have confirmed appointments with the current doctor.
+     * Populates the patient spinner with their names.
+     */
     private fun loadPatients() {
         val doctorId = auth.currentUser?.uid ?: return
 
@@ -97,6 +105,10 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Retrieves the current doctor's full name from the database.
+     * @param onResult callback to return the doctor's name as a string.
+     */
     private fun getDoctorName(onResult: (String) -> Unit) {
         val doctorId = auth.currentUser?.uid ?: return
 
@@ -113,7 +125,9 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Validates input fields, generates a PDF prescription, and uploads it to Firebase.
+     */
     private fun generateAndUploadPrescription() {
         val selectedPatientName = patientSpinner.selectedItem?.toString() ?: return
         val patientId = patientMap[selectedPatientName] ?: return
@@ -151,6 +165,17 @@ class PrescriptionsDocActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Generates a styled PDF document with prescription details.
+     *
+     * @param file the File where the PDF will be saved
+     * @param patientName the full name of the patient
+     * @param medication the name of the medication
+     * @param dosage the dosage amount
+     * @param units the units of the dosage
+     * @param comments additional comments for the prescription
+     * @param doctorName the name of the prescribing doctor
+     */
     private fun generateStyledPdf(
         file: File,
         patientName: String,
@@ -250,7 +275,13 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         document.close()
     }
 
-
+    /**
+     * Uploads the generated PDF file to Firebase Storage and then saves a record in Firestore.
+     *
+     * @param file the PDF file to upload
+     * @param doctorId the ID of the prescribing doctor
+     * @param patientId the ID of the patient
+     */
     private fun uploadPdfToFirebase(file: File, doctorId: String, patientId: String) {
         val storageRef = storage.reference.child("prescriptions/${file.name}")
         val uri = Uri.fromFile(file)
@@ -267,7 +298,13 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Saves the prescription metadata including download URL to Firestore and sends a notification message to the patient.
+     *
+     * @param url the download URL of the uploaded prescription PDF
+     * @param doctorId the ID of the prescribing doctor
+     * @param patientId the ID of the patient
+     */
     private fun savePrescriptionToFirestore(url: String, doctorId: String, patientId: String) {
         val prescriptionData = mapOf(
             "doctorId" to doctorId,
@@ -295,7 +332,9 @@ class PrescriptionsDocActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Clears all input fields and resets the patient spinner to the first item.
+     */
     private fun clearInputs() {
         medicationName.text?.clear()
         dosage.text?.clear()
@@ -303,6 +342,7 @@ class PrescriptionsDocActivity : AppCompatActivity() {
         comments.text?.clear()
         patientSpinner.setSelection(0)
     }
+
 //companion object {
 //    fun sendChatMessageToPatient(patientId: String, messageText: String) {
 //        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return

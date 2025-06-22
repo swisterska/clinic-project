@@ -16,6 +16,10 @@ import com.example.eclinic.doctorClasses.Doctor
 import com.example.eclinic.doctorClasses.EditDoctorProfileActivity
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity for administrators to manage the list of verified doctors.
+ * Allows viewing, editing, and deleting doctor profiles.
+ */
 class AdminDoctorsListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -25,6 +29,9 @@ class AdminDoctorsListActivity : AppCompatActivity() {
     private val doctorList = mutableListOf<Doctor>()
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Initializes the activity, sets up the RecyclerView and loads the doctors from Firestore.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_doctors_list)
@@ -43,7 +50,10 @@ class AdminDoctorsListActivity : AppCompatActivity() {
         fetchDoctors()
     }
 
-
+    /**
+     * Retrieves a list of verified doctors from Firestore and updates the RecyclerView.
+     * Displays a message if no doctors are found.
+     */
     private fun fetchDoctors() {
         db.collection("users")
             .whereEqualTo("role", "DOCTOR")
@@ -64,7 +74,11 @@ class AdminDoctorsListActivity : AppCompatActivity() {
             }
     }
 
-
+    /**
+     * Displays a dialog allowing the administrator to edit a doctor's basic profile information.
+     *
+     * @param doctor The doctor whose information is being edited.
+     */
     private fun showEditDoctorDialog(doctor: Doctor) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_doctor, null)
         val editFirstName = dialogView.findViewById<EditText>(R.id.editFirstName)
@@ -114,6 +128,11 @@ class AdminDoctorsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Opens the activity for editing the full doctor profile.
+     *
+     * @param doctor The doctor to be edited.
+     */
     private fun openEditDoctorProfile(doctor: Doctor) {
         val intent = Intent(this, EditDoctorProfileActivity::class.java).apply {
             putExtra("doctorId", doctor.uid)
@@ -121,6 +140,11 @@ class AdminDoctorsListActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Shows a confirmation dialog before deleting the selected doctor.
+     *
+     * @param doctor The doctor to be deleted.
+     */
     private fun confirmDeleteDoctor(doctor: Doctor) {
         AlertDialog.Builder(this)
             .setTitle("Delete Doctor")
@@ -130,6 +154,11 @@ class AdminDoctorsListActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Deletes a doctor from Firestore based on their UID.
+     *
+     * @param doctor The doctor to delete.
+     */
     private fun deleteDoctor(doctor: Doctor) {
         if (doctor.uid == null) {
             Toast.makeText(this, "Invalid doctor ID", Toast.LENGTH_SHORT).show()

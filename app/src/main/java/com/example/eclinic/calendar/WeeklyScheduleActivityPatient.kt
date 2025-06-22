@@ -19,6 +19,10 @@ import java.util.*
 import com.google.firebase.Timestamp
 import com.example.eclinic.doctorClasses.PrescriptionsDocActivity
 
+/**
+ * Activity for patients to view a doctor's weekly schedule and book appointments.
+ * Patients can navigate through days, see available time slots, and confirm a visit.
+ */
 class WeeklyScheduleActivityPatient : AppCompatActivity() {
 
     private lateinit var dateTitle: TextView
@@ -34,6 +38,14 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
 
+    /**
+     * Called when the activity is first created.
+     * Initializes UI components, retrieves doctor ID and selected date from intent,
+     * sets up click listeners, and loads initial data.
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in [onSaveInstanceState]. Otherwise it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weekly_schedule)
@@ -75,11 +87,20 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
         loadSlotsFromFirebase()
     }
 
+    /**
+     * Updates the text of the [dateTitle] TextView to display the currently selected date
+     * in a formatted string (e.g., "Monday, Jan 01").
+     */
     private fun updateDateTitle() {
         val formatter = SimpleDateFormat("EEEE, MMM dd", Locale.getDefault())
         dateTitle.text = formatter.format(selectedDate.time)
     }
 
+    /**
+     * Updates the RecyclerView with the current list of available time slots.
+     * Creates and sets a new [TimeSlotDisplayAdapter] for the RecyclerView,
+     * handling the selection of time slots by the patient.
+     */
     private fun updateTimeSlots() {
         val adapter = TimeSlotDisplayAdapter(
             selectedSlots,
@@ -93,7 +114,12 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-
+    /**
+     * Loads available and booked time slots for the [selectedDate] from Firebase Firestore.
+     * It filters out the booked slots from the doctor's general availability.
+     * If the selected date is today, it also filters out past time slots with a 10-minute margin.
+     * Updates the [selectedSlots] list and refreshes the RecyclerView.
+     */
     private fun loadSlotsFromFirebase() {
         val dateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(selectedDate.time)
 
@@ -146,7 +172,12 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
     }
 
 
-
+    /**
+     * Books an appointment for the current patient with the selected doctor at the chosen date and time slot.
+     * Creates a new appointment record in Firestore and sends a confirmation message to the patient.
+     * Redirects to [MainPagePatient] upon successful booking.
+     * @param slot The time slot string (e.g., "09:00 - 09:30") for the appointment.
+     */
     private fun bookAppointment(slot: String) {
         val patientId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val visitName = intent.getStringExtra("visitName") ?: "Unknown"
@@ -183,6 +214,11 @@ class WeeklyScheduleActivityPatient : AppCompatActivity() {
             }
     }
 
+    /**
+     * Changes the [selectedDate] by the given offset (e.g., -1 for previous day, 1 for next day).
+     * Updates the date title and reloads slots from Firebase for the new date.
+     * @param offset The number of days to add to or subtract from the current date.
+     */
     private fun changeDay(offset: Int) {
         selectedDate.add(Calendar.DAY_OF_MONTH, offset)
         updateDateTitle()

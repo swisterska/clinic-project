@@ -16,6 +16,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * [AppointmentsActivity] displays a list of a patient's upcoming confirmed appointments.
+ * It fetches appointment data from Firebase Firestore, displays it in a RecyclerView,
+ * and allows patients to cancel appointments.
+ */
 class AppointmentsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -26,6 +31,14 @@ class AppointmentsActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
+    /**
+     * Called when the activity is first created.
+     * Initializes UI components, sets up the RecyclerView with its adapter and layout manager,
+     * and initiates the loading of appointments.
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in [onSaveInstanceState]. Otherwise it is null.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,6 +48,7 @@ class AppointmentsActivity : AppCompatActivity() {
         loadingBar = findViewById(R.id.loadingBar)
         emptyText = findViewById(R.id.emptyText)
 
+        // Initialize the adapter with an empty list and a callback for item clicks (cancel action)
         adapter = AppointmentsAdapter(mutableListOf()) { visit ->
             confirmAndCancelAppointment(visit.documentId)
         }
@@ -44,19 +58,31 @@ class AppointmentsActivity : AppCompatActivity() {
         loadAppointments()
     }
 
+    /**
+     * Called when the activity will start interacting with the user.
+     * This is a good place to load appointments to ensure the list is up-to-date
+     * when the user returns to this activity.
+     */
     override fun onResume() {
         super.onResume()
         loadAppointments()
     }
 
-
+    /**
+     * Loads the current user's confirmed appointments from Firebase Firestore.
+     * It filters appointments to show only those scheduled from today onwards.
+     * Appointment details, including doctor's name, are fetched asynchronously.
+     * The list is then sorted by date and time and displayed in the RecyclerView.
+     * Progress bar and empty text visibility are managed during the loading process.
+     */
     private fun loadAppointments() {
         loadingBar.visibility = View.VISIBLE
         emptyText.visibility = View.GONE
 
+        // Get the current user's UID; return if null (not logged in)
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        // Midnight today
+        // Calculate midnight today for filtering future appointments
         val todayCal = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -66,14 +92,16 @@ class AppointmentsActivity : AppCompatActivity() {
         val today = todayCal.time
 
 
+        // Query "confirmedAppointments" collection where 'id' (patientId) matches current user's UID
         db.collection("confirmedAppointments")
             .whereEqualTo("id", uid)
             .get()
             .addOnSuccessListener { result ->
                 val visits = mutableListOf<VisitItem>()
                 val tasks = mutableListOf<com.google.android.gms.tasks.Task<*>>()
-                val now = Calendar.getInstance().time
+                val now = Calendar.getInstance().time // Current time for filtering out past appointments
 
+                // Iterate through each appointment document
                 for (doc in result.documents) {
                     val dateStr = doc.getString("date")
                     val hour = doc.getString("hour") ?: continue
@@ -81,56 +109,74 @@ class AppointmentsActivity : AppCompatActivity() {
                     val price = doc.getString("price") ?: "Price"
                     val doctorId = doc.getString("doctorId") ?: continue
 
+                    // Parse the date string; skip if parsing fails
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
-                    if (parsedDate != null && !parsedDate.before(today)) {                        val docId = doc.id
+                    // Only add appointments that are not before today
+                    if (parsedDate != null && !parsedDate.before(today)) {                        val docId = doc.id // Document ID for cancellation
+                        // Create a task to fetch doctor details for each appointment
                         val task = db.collection("users").document(doctorId).get()
                             .addOnSuccessListener { doctorDoc ->
                                 val firstName = doctorDoc.getString("firstName") ?: ""
                                 val lastName = doctorDoc.getString("lastName") ?: ""
-                                val doctorName = "Dr. $firstName $lastName".trim()
+                                val doctorName = "Dr. $firstName $lastName".trim() // Format doctor's name
                                 visits.add(VisitItem(parsedDate, hour, type, doctorName, docId, price))
                             }
                         tasks.add(task)
                     }
                 }
 
+                // Execute all doctor fetching tasks concurrently and then update UI
                 com.google.android.gms.tasks.Tasks.whenAllComplete(tasks)
                     .addOnSuccessListener {
+                        // Sort the visits by date, then by hour
                         visits.sortWith(
                             compareBy<VisitItem> { it.date }.thenBy {
                                 SimpleDateFormat("HH:mm", Locale.getDefault()).parse(it.hour)?.time ?: 0
                             }
                         )
-                        loadingBar.visibility = View.GONE
+                        loadingBar.visibility = View.GONE // Hide loading bar
                         if (visits.isEmpty()) {
-                            emptyText.visibility = View.VISIBLE
+                            emptyText.visibility = View.VISIBLE // Show empty message if no appointments
                         } else {
-                            emptyText.visibility = View.GONE
+                            emptyText.visibility = View.GONE // Hide empty message
                         }
-                        adapter.updateAppointments(visits)
+                        adapter.updateAppointments(visits) // Update RecyclerView adapter
                     }
             }
             .addOnFailureListener {
+                // Handle errors during data loading
                 loadingBar.visibility = View.GONE
                 emptyText.visibility = View.VISIBLE
+                Toast.makeText(this, "Failed to load appointments.", Toast.LENGTH_SHORT).show()
             }
     }
 
+    /**
+     * Displays an [AlertDialog] to confirm with the user if they want to cancel an appointment.
+     * If confirmed, it calls [cancelAppointment].
+     * @param docId The document ID of the appointment to be cancelled.
+     */
     private fun confirmAndCancelAppointment(docId: String) {
         AlertDialog.Builder(this)
             .setTitle("Cancel Appointment")
             .setMessage("Are you sure you want to cancel this appointment?")
-            .setPositiveButton("Yes") { _, _ -> cancelAppointment(docId) }
-            .setNegativeButton("No", null)
+            .setPositiveButton("Yes") { _, _ -> cancelAppointment(docId) } // If "Yes", call cancelAppointment
+            .setNegativeButton("No", null) // If "No", do nothing
             .show()
     }
 
+    /**
+     * Deletes the specified appointment from the "confirmedAppointments" collection in Firestore.
+     * On success, it shows a toast message and reloads the appointments list.
+     * On failure, it shows a failure toast message.
+     * @param docId The document ID of the appointment to be deleted.
+     */
     private fun cancelAppointment(docId: String) {
         db.collection("confirmedAppointments").document(docId)
-            .delete()
+            .delete() // Delete the document
             .addOnSuccessListener {
                 Toast.makeText(this, "Appointment cancelled", Toast.LENGTH_SHORT).show()
-                loadAppointments()
+                loadAppointments() // Reload appointments to reflect the change
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to cancel appointment", Toast.LENGTH_SHORT).show()
