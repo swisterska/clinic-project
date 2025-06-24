@@ -14,13 +14,25 @@
         android:textColor="#000000"
         android:padding="12dp"
         android:textSize="16sp"
-        android:text="Sample doctor message" /> <TextView
-    android:id="@+id/timestampText"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:text="15:05"
-    android:textSize="12sp"
-    android:textColor="#808080" />
+        android:text="Sample doctor message" />
+
+    <TextView
+        android:id="@+id/fileLinkText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/ourbluebutlighter"
+        android:textSize="16sp"
+        android:backgroundTint="@color/ourgrey"
+        android:visibility="gone"
+        android:autoLink="web" />
+
+    <TextView
+        android:id="@+id/timestampText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="15:05"
+        android:textSize="12sp"
+        android:textColor="#808080" />
 
 </LinearLayout>

@@ -1,5 +1,7 @@
 package com.example.eclinic.chat
 
+import android.content.Intent
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +40,7 @@ class ChatAdapter(
     inner class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val messageText: TextView = itemView.findViewById(R.id.messageText)
         val timestampText: TextView = itemView.findViewById(R.id.timestampText)
+        val fileLinkText: TextView? = itemView.findViewById(R.id.fileLinkText)
     }
 
     /**
@@ -85,15 +88,23 @@ class ChatAdapter(
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = messages[position]
 
-        // Handle HTML formatting and clickable links
-        holder.messageText.text = HtmlCompat.fromHtml(message.messageText, HtmlCompat.FROM_HTML_MODE_LEGACY)
-        holder.messageText.movementMethod = LinkMovementMethod.getInstance()
+        if (!message.messageText.isNullOrBlank() && message.messageText.contains("<a href=")) {
+            holder.messageText.text = HtmlCompat.fromHtml(
+                message.messageText,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            holder.messageText.movementMethod = LinkMovementMethod.getInstance()
+        } else {
+            holder.messageText.text = message.messageText
+        }
 
-        // Display message timestamp
+
+
         message.timestamp?.let {
             holder.timestampText.text = android.text.format.DateFormat.format("HH:mm", it).toString()
         }
     }
+
 
     /**
      * Returns the total number of items in the data set held by the adapter.
