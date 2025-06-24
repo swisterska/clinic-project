@@ -30,6 +30,10 @@ class AppointmentsActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val hourFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+    private lateinit var switchPastAppointments: com.google.android.material.switchmaterial.SwitchMaterial
+
 
     /**
      * Called when the activity is first created.
@@ -47,6 +51,12 @@ class AppointmentsActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.appointmentsRecyclerView)
         loadingBar = findViewById(R.id.loadingBar)
         emptyText = findViewById(R.id.emptyText)
+
+        switchPastAppointments = findViewById(R.id.switchPastAppointments)
+        switchPastAppointments.setOnCheckedChangeListener { _, _ ->
+            loadAppointments()
+        }
+
 
         // Initialize the adapter with an empty list and a callback for item clicks (cancel action)
         adapter = AppointmentsAdapter(mutableListOf()) { visit ->
@@ -70,7 +80,8 @@ class AppointmentsActivity : AppCompatActivity() {
 
     /**
      * Loads the current user's confirmed appointments from Firebase Firestore.
-     * It filters appointments to show only those scheduled from today onwards.
+     * It filters appointments to show only those scheduled from today onwards
+     * or views past appointments if the switch is on.
      * Appointment details, including doctor's name, are fetched asynchronously.
      * The list is then sorted by date and time and displayed in the RecyclerView.
      * Progress bar and empty text visibility are managed during the loading process.
@@ -103,37 +114,70 @@ class AppointmentsActivity : AppCompatActivity() {
 
                 // Iterate through each appointment document
                 for (doc in result.documents) {
-                    val dateStr = doc.getString("date")
+                    val dateStr = doc.getString("date") ?: continue
                     val hour = doc.getString("hour") ?: continue
                     val type = doc.getString("typeOfTheVisit") ?: "Visit"
                     val price = doc.getString("price") ?: "Price"
                     val doctorId = doc.getString("doctorId") ?: continue
 
-                    // Parse the date string; skip if parsing fails
-                    val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
-                    // Only add appointments that are not before today
-                    if (parsedDate != null && !parsedDate.before(today)) {                        val docId = doc.id // Document ID for cancellation
-                        // Create a task to fetch doctor details for each appointment
-                        val task = db.collection("users").document(doctorId).get()
-                            .addOnSuccessListener { doctorDoc ->
-                                val firstName = doctorDoc.getString("firstName") ?: ""
-                                val lastName = doctorDoc.getString("lastName") ?: ""
-                                val doctorName = "Dr. $firstName $lastName".trim() // Format doctor's name
-                                visits.add(VisitItem(parsedDate, hour, type, doctorName, docId, price))
-                            }
-                        tasks.add(task)
+                    val parsedDate = try {
+                        dateFormat.parse(dateStr)
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                    if (parsedDate != null) {
+                        val showPast = switchPastAppointments.isChecked
+                        val isPastAppointment = parsedDate.before(today) ||
+                                (parsedDate == today && SimpleDateFormat("HH:mm", Locale.getDefault())
+                                    .parse(hour)?.before(Calendar.getInstance().time) == true)
+
+                        if ((showPast && isPastAppointment) || (!showPast && !isPastAppointment)) {
+                            val docId = doc.id
+                            val task = db.collection("users").document(doctorId).get()
+                                .addOnSuccessListener { doctorDoc ->
+                                    val firstName = doctorDoc.getString("firstName") ?: ""
+                                    val lastName = doctorDoc.getString("lastName") ?: ""
+                                    val doctorName = "Dr. $firstName $lastName".trim()
+                                    visits.add(
+                                        VisitItem(
+                                            parsedDate,
+                                            hour,
+                                            type,
+                                            doctorName,
+                                            docId,
+                                            price,
+                                            isPastAppointment
+                                        )
+                                    )
+                                }
+                            tasks.add(task)
+                        }
                     }
                 }
+
 
                 // Execute all doctor fetching tasks concurrently and then update UI
                 com.google.android.gms.tasks.Tasks.whenAllComplete(tasks)
                     .addOnSuccessListener {
                         // Sort the visits by date, then by hour
-                        visits.sortWith(
-                            compareBy<VisitItem> { it.date }.thenBy {
-                                SimpleDateFormat("HH:mm", Locale.getDefault()).parse(it.hour)?.time ?: 0
-                            }
-                        )
+                        val showPast = switchPastAppointments.isChecked
+                        if (showPast) {
+                            // Sort descending: newest past appointment first
+                            visits.sortWith(
+                                compareByDescending<VisitItem> { it.date }.thenByDescending {
+                                    hourFormat.parse(it.hour)?.time ?: 0
+                                }
+                            )
+                        } else {
+                            // Sort ascending: soonest upcoming appointment first
+                            visits.sortWith(
+                                compareBy<VisitItem> { it.date }.thenBy {
+                                    hourFormat.parse(it.hour)?.time ?: 0
+                                }
+                            )
+                        }
+
                         loadingBar.visibility = View.GONE // Hide loading bar
                         if (visits.isEmpty()) {
                             emptyText.visibility = View.VISIBLE // Show empty message if no appointments

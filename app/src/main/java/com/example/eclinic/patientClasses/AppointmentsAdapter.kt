@@ -78,6 +78,8 @@ class AppointmentsAdapter(
         holder.visitDate.text = SimpleDateFormat("EEE, dd MMM", Locale.getDefault()).format(appointment.date)
         holder.visitTime.text = appointment.hour
         holder.visitPrice.text = appointment.price
+        holder.cancelBtn.visibility = if (appointment.isPast) View.GONE else View.VISIBLE
+
 
 
         // Set click listener for the cancel button, invoking the provided lambda

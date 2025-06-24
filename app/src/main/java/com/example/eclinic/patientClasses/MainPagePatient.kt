@@ -190,13 +190,14 @@ class MainPagePatient : AppCompatActivity() {
 
                     val parsedDate = try { dateFormat.parse(dateStr!!) } catch (e: Exception) { null }
 
-                    if (parsedDate != null && !parsedDate.before(today) && !parsedDate.after(oneWeekLater)) {                        val task = db.collection("users").document(doctorId).get()
+                    if (parsedDate != null && !parsedDate.before(today) && !parsedDate.after(oneWeekLater)) {
+                        val task = db.collection("users").document(doctorId).get()
                         .addOnSuccessListener { doctorDoc ->
                             val firstName = doctorDoc.getString("firstName") ?: ""
                             val lastName = doctorDoc.getString("lastName") ?: ""
                             val doctorName = "Dr. $firstName $lastName".trim()
 
-                            visits.add(VisitItem(parsedDate, hour, type, doctorName, doc.id, price))
+                            visits.add(VisitItem(parsedDate, hour, type, doctorName, doc.id, price, false))
                         }
                         tasks.add(task)
                     }
