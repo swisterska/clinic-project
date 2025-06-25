@@ -194,8 +194,15 @@ class MainCalendarActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { confirmedDocs ->
                     val bookedSlots = confirmedDocs.mapNotNull { it.getString("hour") }
-                    availableSlots = allSlots.filter { it !in bookedSlots }
-                        .sortedBy { it }
+                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val todayKey = formatter.format(Calendar.getInstance().time)
+
+                    availableSlots = if (selectedDateKey == todayKey) {
+                        allSlots.filter { it !in bookedSlots && isSlotInFuture(it) }
+                    } else {
+                        allSlots.filter { it !in bookedSlots }
+                    }.sortedBy { it }
+
 
                     if (availableSlots.isEmpty()) {
                         textAvailableHours.text = "No available hours."
@@ -271,11 +278,19 @@ class MainCalendarActivity : AppCompatActivity() {
                             val bookedSlots = confirmedMap[key] ?: emptyList()
                             val availableSlots = slots - bookedSlots
 
-                            if (availableSlots.isEmpty()) {
+                            val isToday = key == today
+                            val futureSlots = if (isToday) {
+                                availableSlots.filter { isSlotInFuture(it) }
+                            } else {
+                                availableSlots
+                            }
+
+                            if (futureSlots.isEmpty()) {
                                 redDates.add(CalendarDay.from(date))
                             } else {
                                 greenDates.add(CalendarDay.from(date))
                             }
+
                         }
                     }
 
@@ -301,7 +316,42 @@ class MainCalendarActivity : AppCompatActivity() {
                         }
                     })
                 }
+
+
         }
     }
+
+    /**
+     * Determines if the given time slot is in the future relative to the current time.
+     *
+     * The slot string is expected to be in the format "HH:mm - HH:mm".
+     * Only the start time (before the " - ") is evaluated.
+     *
+     * @param slot The time slot string (e.g., "14:30 - 15:00").
+     * @return True if the slot's start time is after the current system time; false otherwise.
+     */
+
+    private fun isSlotInFuture(slot: String): Boolean {
+        val slotStart = slot.substringBefore(" - ")
+        val parts = slotStart.split(":")
+
+        val slotTime = Calendar.getInstance().apply {
+            val now = Calendar.getInstance()
+            set(Calendar.YEAR, now.get(Calendar.YEAR))
+            set(Calendar.MONTH, now.get(Calendar.MONTH))
+            set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
+            set(Calendar.HOUR_OF_DAY, parts[0].toInt())
+            set(Calendar.MINUTE, parts[1].toInt())
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val currentTime = Calendar.getInstance()
+        return slotTime.after(currentTime)
+    }
+
+
+
+
 
 }

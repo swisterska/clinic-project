@@ -63,16 +63,7 @@
                 android:text="Doctor"
                 android:textColor="@android:color/black" />
 
-            <!-- Add a third button for Admin -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnAdmin"
-                android:layout_width="185dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@color/unselectedbutton"
-                android:text="Admin"
-                android:textColor="@android:color/black" />
+
 
         </LinearLayout>
 

@@ -72,7 +72,7 @@ class RegisterActivity : BaseActivity() {
         registerButton = findViewById(R.id.btnRegister)
         btnTogglePassword = findViewById(R.id.btnTogglePassword)
         btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword)
-        btnAdmin = findViewById(R.id.btnAdmin)
+
 
         // Set default button styles
         btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
@@ -94,12 +94,7 @@ class RegisterActivity : BaseActivity() {
             specializationSpinner.visibility = EditText.VISIBLE
         }
 
-        btnAdmin.setOnClickListener {
-            selectedRole = "ADMIN"
-            toggleButtonSelection()
-            inputDob.visibility = View.GONE
-            specializationSpinner.visibility = View.GONE
-        }
+
 
         // Register button listener
         registerButton.setOnClickListener {
@@ -172,18 +167,14 @@ class RegisterActivity : BaseActivity() {
             "PATIENT" -> {
                 btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
                 btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+
             }
             "DOCTOR" -> {
                 btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
                 btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
-                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+
             }
-            "ADMIN" -> {
-                btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-                btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
-            }
+//
         }
     }
 
@@ -278,9 +269,7 @@ class RegisterActivity : BaseActivity() {
                                 userData["specialization"] = specialization
                                 userData["verified"] = false
                             }
-                            "ADMIN" -> {
-                                userData["verified"] = true
-                            }
+
                         }
 
                         FirebaseFirestore.getInstance().collection("users")

@@ -210,21 +210,40 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
                 val patientId = booking.getString("id") ?: "Unknown"
                 val visitType = booking.getString("typeOfTheVisit") ?: "Unknown"
 
-                // Now get patient info
                 db.collection("users").document(patientId).get()
                     .addOnSuccessListener { patientDoc ->
                         val firstName = patientDoc.getString("firstName") ?: ""
                         val lastName = patientDoc.getString("lastName") ?: ""
                         val patientName = "$firstName $lastName".trim()
 
-                        AlertDialog.Builder(this)
-                            .setTitle("Booked Slot Info")
-                            .setMessage("Patient: $patientName\nVisit Type: $visitType\nTime: $hour")
-                            .setPositiveButton("Cancel Appointment") { _, _ ->
-                                cancelAppointment(booking.id)
-                            }
-                            .setNegativeButton("Close", null)
-                            .show()
+                        val inflater = layoutInflater
+                        val dialogView = inflater.inflate(R.layout.dialog_booked_slot_info, null)
+
+                        val tvPatientName = dialogView.findViewById<TextView>(R.id.tvPatientName)
+                        val tvVisitType = dialogView.findViewById<TextView>(R.id.tvVisitType)
+                        val tvVisitTime = dialogView.findViewById<TextView>(R.id.tvVisitTime)
+
+                        tvPatientName.text = "Patient: $patientName"
+                        tvVisitType.text = "Visit Type: $visitType"
+                        tvVisitTime.text = "Time: $hour"
+
+                        val dialog = AlertDialog.Builder(this)
+                            .setView(dialogView)
+                            .create()
+
+                        dialog.show()
+
+
+                        dialogView.findViewById<Button>(R.id.btnCloseDialog)?.setOnClickListener {
+                            dialog.dismiss()
+                        }
+
+                        dialogView.findViewById<Button>(R.id.btnCancelAppointment)?.setOnClickListener {
+                            cancelAppointment(booking.id)
+                            dialog.dismiss()
+                        }
+
+
                     }
             }
     }
@@ -245,4 +264,7 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
                 Toast.makeText(this, "Failed to cancel", Toast.LENGTH_SHORT).show()
             }
     }
+
+
+
 }
