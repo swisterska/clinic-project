@@ -2,6 +2,7 @@ package com.example.eclinic.patientClasses
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -201,12 +202,24 @@ class AppointmentsActivity : AppCompatActivity() {
      * @param docId The document ID of the appointment to be cancelled.
      */
     private fun confirmAndCancelAppointment(docId: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Cancel Appointment")
-            .setMessage("Are you sure you want to cancel this appointment?")
-            .setPositiveButton("Yes") { _, _ -> cancelAppointment(docId) } // If "Yes", call cancelAppointment
-            .setNegativeButton("No", null) // If "No", do nothing
-            .show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_cancel_appointment, null)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            dialog.dismiss()
+            cancelAppointment(docId)
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     /**
