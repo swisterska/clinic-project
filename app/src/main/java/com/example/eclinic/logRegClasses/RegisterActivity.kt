@@ -15,9 +15,9 @@ import java.time.LocalDate
 import java.util.*
 
 /**
- * Activity responsible for user registration.
- * Allows selecting roles (Patient, Doctor, Admin) and filling in appropriate details.
- * Performs validation and registers the user with Firebase Authentication and Firestore.
+•  Activity responsible for user registration.
+•  Allows selecting roles (Patient, Doctor, Admin) and filling in appropriate details.
+•  Performs validation and registers the user with Firebase Authentication and Firestore.
  */
 class RegisterActivity : BaseActivity() {
 
@@ -46,7 +46,7 @@ class RegisterActivity : BaseActivity() {
     private var selectedRole: String = "PATIENT"  // Default role is patient
 
     /**
-     * Initializes UI components, sets up listeners and default states.
+    ○  Initializes UI components, sets up listeners and default states.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +72,7 @@ class RegisterActivity : BaseActivity() {
         registerButton = findViewById(R.id.btnRegister)
         btnTogglePassword = findViewById(R.id.btnTogglePassword)
         btnToggleConfirmPassword = findViewById(R.id.btnToggleConfirmPassword)
-
+        btnAdmin = findViewById(R.id.btnAdmin)
 
         // Set default button styles
         btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
@@ -94,7 +94,12 @@ class RegisterActivity : BaseActivity() {
             specializationSpinner.visibility = EditText.VISIBLE
         }
 
-
+        btnAdmin.setOnClickListener {
+            selectedRole = "ADMIN"
+            toggleButtonSelection()
+            inputDob.visibility = View.GONE
+            specializationSpinner.visibility = View.GONE
+        }
 
         // Register button listener
         registerButton.setOnClickListener {
@@ -126,7 +131,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     /**
-     * Shows a DatePicker dialog for selecting date of birth.
+    ○  Shows a DatePicker dialog for selecting date of birth.
      */
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
@@ -143,10 +148,10 @@ class RegisterActivity : BaseActivity() {
     }
 
     /**
-     * Toggles the visibility of password fields between visible and hidden.
+    ○  Toggles the visibility of password fields between visible and hidden.
      *
-     * @param editText The password EditText to toggle.
-     * @param toggleButton The ImageButton which triggers the toggle.
+    ○  @param editText The password EditText to toggle.
+    ○  @param toggleButton The ImageButton which triggers the toggle.
      */
     private fun togglePasswordVisibility(editText: EditText, toggleButton: ImageButton) {
         if (editText.inputType == android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
@@ -160,29 +165,33 @@ class RegisterActivity : BaseActivity() {
     }
 
     /**
-     * Updates the UI button backgrounds based on currently selected role.
+    ○  Updates the UI button backgrounds based on currently selected role.
      */
     private fun toggleButtonSelection() {
         when (selectedRole) {
             "PATIENT" -> {
                 btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
                 btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
-
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
             }
             "DOCTOR" -> {
                 btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
                 btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
-
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
             }
-//
+            "ADMIN" -> {
+                btnPatient.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnDoctor.setBackgroundColor(ContextCompat.getColor(this, R.color.unselectedbutton))
+                btnAdmin.setBackgroundColor(ContextCompat.getColor(this, R.color.selectedbutton))
+            }
         }
     }
 
     /**
-     * Validates all input fields according to selected role.
-     * Shows error snackbars for invalid or missing inputs.
+    ○  Validates all input fields according to selected role.
+    ○  Shows error snackbars for invalid or missing inputs.
      *
-     * @return true if all inputs are valid, false otherwise.
+    ○  @return true if all inputs are valid, false otherwise.
      */
     private fun validateRegisterDetails(): Boolean {
         return when {
@@ -227,8 +236,8 @@ class RegisterActivity : BaseActivity() {
     }
 
     /**
-     * Registers a new user with Firebase Authentication and saves user details to Firestore.
-     * Includes role-based additional data (DOB, specialization, verification status).
+    ○  Registers a new user with Firebase Authentication and saves user details to Firestore.
+    ○  Includes role-based additional data (DOB, specialization, verification status).
      */
     private fun registerUser() {
         if (validateRegisterDetails()) {
@@ -269,7 +278,9 @@ class RegisterActivity : BaseActivity() {
                                 userData["specialization"] = specialization
                                 userData["verified"] = false
                             }
-
+                            "ADMIN" -> {
+                                userData["verified"] = true
+                            }
                         }
 
                         FirebaseFirestore.getInstance().collection("users")
@@ -292,7 +303,7 @@ class RegisterActivity : BaseActivity() {
     }
 
     /**
-     * Navigates to the login screen.
+    ○  Navigates to the login screen.
      */
     fun goToLogin(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
