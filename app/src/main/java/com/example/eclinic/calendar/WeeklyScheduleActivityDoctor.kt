@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eclinic.R
+import com.example.eclinic.chat.ChatUtils
 import com.google.firebase.firestore.SetOptions
 import java.text.SimpleDateFormat
 import java.util.*
@@ -210,6 +211,7 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
                 val patientId = booking.getString("id") ?: "Unknown"
                 val visitType = booking.getString("typeOfTheVisit") ?: "Unknown"
 
+                // Now get patient info
                 db.collection("users").document(patientId).get()
                     .addOnSuccessListener { patientDoc ->
                         val firstName = patientDoc.getString("firstName") ?: ""
@@ -250,21 +252,33 @@ class WeeklyScheduleActivityDoctor : AppCompatActivity(), TimeSlotDialog.TimeSlo
 
     /**
      * Cancels a confirmed appointment by deleting its record from the Firebase Firestore database.
-     * After cancellation, it refreshes the time slots to reflect the change.
+     * After cancellation, it refreshes the time slots to reflect the change adn sends a message to the patient.
      * @param appointmentDocId The document ID of the appointment to be canceled.
      */
     private fun cancelAppointment(appointmentDocId: String) {
         db.collection("confirmedAppointments").document(appointmentDocId)
-            .delete()
-            .addOnSuccessListener {
-                Toast.makeText(this, "Appointment canceled", Toast.LENGTH_SHORT).show()
-                loadSlotsFromFirebase() // Refresh slots
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Failed to cancel", Toast.LENGTH_SHORT).show()
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val patientId = document.getString("id") ?: return@addOnSuccessListener
+                    val visitType = document.getString("typeOfTheVisit") ?: "appointment"
+                    val dateKey = SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.getDefault()).format(selectedDate.time)
+
+                    // Delete the appointment
+                    db.collection("confirmedAppointments").document(appointmentDocId)
+                        .delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Appointment canceled", Toast.LENGTH_SHORT).show()
+                            loadSlotsFromFirebase()
+
+                            // Compose and send cancellation message
+                            val messageText = "Your $visitType visit on $dateKey was cancelled. Apologies for the inconvenience."
+                            ChatUtils.sendMessage(fromId = doctorId, toId = patientId, messageText = messageText)
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Failed to cancel", Toast.LENGTH_SHORT).show()
+                        }
+                }
             }
     }
-
-
-
 }

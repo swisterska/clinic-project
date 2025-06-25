@@ -169,7 +169,7 @@ class MainPageDoctor : AppCompatActivity() {
                             val patientName = "$firstName $lastName".trim() // Combine first and last name
 
                             // Add the VisitItem to the list
-                            visits.add(VisitItem(parsedDate, hour, type, patientName, documentId, price))
+                            visits.add(VisitItem(parsedDate, hour, type, patientName, documentId, price, false))
                         }
                     patientTasks.add(patientTask)
                 }

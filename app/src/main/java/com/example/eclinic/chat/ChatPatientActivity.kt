@@ -1,8 +1,10 @@
 package com.example.eclinic.chat
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.example.eclinic.R
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 
 /**
  * Activity for patients to engage in a chat conversation with a specific other participant (e.g., a doctor).
@@ -61,6 +64,15 @@ class ChatPatientActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        val attachFileButton = findViewById<ImageButton>(R.id.button_attach_file_doc)
+        attachFileButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "*/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+            }
+            startActivityForResult(Intent.createChooser(intent, "Select File"), PICK_FILE_REQUEST_CODE)
         }
 
         firestore = FirebaseFirestore.getInstance()
@@ -255,4 +267,116 @@ class ChatPatientActivity : AppCompatActivity() {
         chatListener?.remove()
         Log.d("ChatActivity", "ChatListener removed in onDestroy.")
     }
+
+    /**
+     * Sends a file message in the current chat session.
+     *
+     * Creates a chat message of type "file" with a clickable hyperlink to the uploaded file.
+     * If the chat ID is not yet initialized, the function attempts to create the chat first.
+     *
+     * @param fileUrl The publicly accessible URL of the uploaded file.
+     */
+    private fun sendFileMessage(fileUrl: String) {
+        if (chatId == null) {
+            Log.w("ChatActivity", "Chat ID jest null podczas próby wysłania wiadomości z plikiem.")
+            Toast.makeText(this, "Chat jeszcze nie gotowy, spróbuj ponownie.", Toast.LENGTH_SHORT).show()
+            findOrCreateChat()
+            return
+        }
+
+        val clickableLinkText = "<a href=\"$fileUrl\">View the file</a>"
+
+        val chatMessage = ChatMessage(
+            senderId = currentUserId,
+            receiverId = otherParticipantId,
+            messageText = clickableLinkText,
+            messageType = "file",
+            fileUrl = fileUrl
+        )
+
+        firestore.collection("chats").document(chatId!!)
+            .collection("messages")
+            .add(chatMessage)
+            .addOnSuccessListener {
+                Log.d("ChatActivity", "Wiadomość plikowa wysłana pomyślnie.")
+                // Aktualizacja metadanych chatu
+                firestore.collection("chats").document(chatId!!)
+                    .update(
+                        "lastMessageTimestamp", FieldValue.serverTimestamp(),
+                        "lastMessageText", "[Plik]"
+                    )
+                    .addOnSuccessListener {
+                        Log.d("ChatActivity", "Metadane chatu zaktualizowane po wysłaniu pliku.")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("ChatActivity", "Błąd aktualizacji metadanych chatu: ${e.message}", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("ChatActivity", "Błąd wysyłania wiadomości plikowej: ${e.message}", e)
+                Toast.makeText(this, "Błąd wysyłania wiadomości plikowej: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    /**
+     * Holds static constants used within the activity.
+     */
+    companion object {
+        /**
+         * Request code used to identify the file picker activity result.
+         */
+        private const val PICK_FILE_REQUEST_CODE = 1001
+    }
+
+    /**
+     * Handles the result of the file picker activity.
+     *
+     * If a file was selected successfully, it proceeds with uploading it to Firebase Storage.
+     *
+     * @param requestCode The request code used when starting the file picker intent.
+     * @param resultCode The result status code (e.g., RESULT_OK).
+     * @param data The returned intent containing the selected file's URI.
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
+            data?.data?.let { uri ->
+                uploadFileToFirebaseStorage(uri)
+            }
+        }
+    }
+
+    /**
+     * Uploads the selected file to Firebase Storage and, upon success,
+     * retrieves its download URL to send it as a chat message.
+     *
+     * If the chat is not yet ready (`chatId` is null), it informs the user.
+     *
+     * @param fileUri The URI of the file selected by the user.
+     */
+    private fun uploadFileToFirebaseStorage(fileUri: Uri) {
+
+        if (chatId == null) {
+            Toast.makeText(this, "Chat nie jest gotowy, spróbuj ponownie później.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileRef = storageRef.child("chat_files/${System.currentTimeMillis()}_${fileUri.lastPathSegment}")
+
+        val uploadTask = fileRef.putFile(fileUri)
+        uploadTask.addOnSuccessListener {
+            fileRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                Log.d("ChatActivity", "Upload success, download URL: $downloadUrl")
+                sendFileMessage(downloadUrl.toString())
+            }.addOnFailureListener { e ->
+                Log.e("ChatActivity", "Failed to get download URL: ${e.message}", e)
+                Toast.makeText(this, "Nie udało się pobrać linku pliku: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener { e ->
+            Log.e("ChatActivity", "Upload failed: ${e.message}", e)
+            Toast.makeText(this, "Upload pliku nie powiódł się: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 }

@@ -25,7 +25,8 @@ data class VisitItem(
     val type: String,
     val doctorName: String,
     val documentId: String,
-    val price: String
+    val price: String,
+    val isPast: Boolean
 )
 
 /**

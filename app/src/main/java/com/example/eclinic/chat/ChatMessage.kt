@@ -13,6 +13,8 @@ import java.util.Date
  * @property senderId The Firebase User ID (UID) of the user who sent this message.
  * @property receiverId The Firebase User ID (UID) of the user who is intended to receive this message.
  * @property messageText The actual text content of the chat message.
+ * @property messageType The type of the message, e.g., "text" or "file". Defaults to "text".
+ * @property fileUrl An optional URL to the file if the message includes an attachment (e.g., PDF, image).
  * @property timestamp The server timestamp when the message was sent.
  * This is automatically populated by Firestore's `@ServerTimestamp` annotation,
  * ensuring accurate and consistent timekeeping across clients.
@@ -23,6 +25,8 @@ data class ChatMessage(
     val senderId: String = "",
     val receiverId: String = "",
     val messageText: String = "",
+    val messageType: String = "text",
+    val fileUrl: String? = null,
     @ServerTimestamp
     val timestamp: Date? = null
 )
